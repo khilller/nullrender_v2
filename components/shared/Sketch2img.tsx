@@ -58,6 +58,8 @@ const Sketch2img = () => {
 
     const { toast } = useToast()
 
+    const router = useRouter()
+
     //cloudinary
     const [info, setInfo] = React.useState();
     
@@ -89,6 +91,7 @@ const Sketch2img = () => {
             console.error(error)
         }
          finally {
+            router.refresh()
          }
     }
 

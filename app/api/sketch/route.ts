@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
 
+import { incrementApiLimit, checkApiLimit } from "@/lib/api-limit";
 
 const replicate = new Replicate({
     auth: process.env.REPLICATE_API_TOKEN,
@@ -24,6 +25,13 @@ export async function POST(req: Request) {
             return new NextResponse("Missing required fields", { status: 400 });
         }
 
+        const freeTrial = await checkApiLimit();
+
+        if(!freeTrial){
+            return new NextResponse("Free trial has expired", { status: 403 });
+        }
+
+
         const response = await replicate.run(
             "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
             {
@@ -41,6 +49,7 @@ export async function POST(req: Request) {
               }
             }
           );
+          await incrementApiLimit();
 
           return NextResponse.json(response);
 

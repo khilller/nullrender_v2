@@ -58,6 +58,8 @@ const TransformationInterior = () => {
 
     const { toast } = useToast()
 
+    const router = useRouter()
+
     //cloudinary
     const [info, setInfo] = React.useState();
     
@@ -89,6 +91,7 @@ const TransformationInterior = () => {
             console.error(error)
         }
          finally {
+            router.refresh()
          }
     }
 

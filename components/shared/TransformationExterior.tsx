@@ -36,6 +36,7 @@ import Image from 'next/image'
 import { Download, LoaderCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Loader from './Loader'
+import { useProModal } from '@/hooks/use-pro-modal'
   
 
 const formSchema = z.object({
@@ -53,10 +54,13 @@ const formSchema = z.object({
 
 const TransformationExterior = () => {
 
+    const proModal = useProModal()
 
     const [images, setImages] = React.useState<string[]>([])
 
     const { toast } = useToast()
+
+    const router = useRouter()
 
     //cloudinary
     const [info, setInfo] = React.useState();
@@ -85,10 +89,13 @@ const TransformationExterior = () => {
             console.log(response.data)
             setImages(response.data)
 
-        } catch (error) {
-            console.error(error)
+        } catch (error:any) {
+            if (error?.response?.status === 403) {
+                proModal.onOpen()
+            }
         }
          finally {
+            router.refresh()
          }
     }
 

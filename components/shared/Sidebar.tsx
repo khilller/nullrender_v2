@@ -7,8 +7,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import { Card, CardContent } from '../ui/card'
+import { MAX_FREE_COUNTS } from '@/constant'
+import FreeCounter from './FreeCounter'
 
-const Sidebar = () => {
+interface SidebarProps {
+    apiLimitCount: number
+}
+
+const Sidebar = ({apiLimitCount=0}: SidebarProps) => {
 
     const getIcon = (iconName : string) => {
         switch (iconName) {
@@ -43,7 +50,7 @@ const Sidebar = () => {
                     />
                 </div>
             </Link>
-            <div className='flex flex-col justify-between h-full'>
+            <div className='flex flex-col justify-between h-full '>
                 
                     <ul className='sidebar-nav_elements'>
                         {navLinks.slice(0, 3).map((link, index) => {
@@ -88,9 +95,10 @@ const Sidebar = () => {
                             <UserButton afterSignOutUrl='/' showName />
                         </li>
                     </ul>
-                
-               
             </div>
+        </div>
+        <div>
+             <FreeCounter apiLimitCount={apiLimitCount} />
         </div>
     </div>
   )
