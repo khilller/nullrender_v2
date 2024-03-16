@@ -5,7 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import { Button } from '../ui/button'
-import { Bolt, Building2, HandCoins, Laugh, LayoutDashboard } from 'lucide-react'
+import { Bolt, Building2, HandCoins, Laugh, LayoutDashboard, PencilRuler } from 'lucide-react'
 
 import {
     Sheet,
@@ -36,6 +36,8 @@ const MobileNav = () => {
                 return <Laugh className='text-orange-700' />
             case 'buy':
                 return <HandCoins className='text-yellow-400'/>
+            case 'sketch':
+                return <PencilRuler className='text-green-500'/>
             default:
                 return null;
         }

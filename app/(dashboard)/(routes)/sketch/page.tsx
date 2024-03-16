@@ -17,7 +17,7 @@ const page = async () => {
         title='Sketch to Image Render'
         description="Render beautiful interiors with the smartest AI."
         icon={PencilRuler}
-        iconColor='text-pink-600'
+        iconColor='text-green-500'
         bgColor='bg-slate-200'
         />
     <div className='px-4 lg:px-8 w-full gap-x-3 mb-8'>
