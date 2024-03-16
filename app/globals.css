@@ -80,3 +80,31 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+.header {
+  @apply flex-between w-full border-b-4 border-purple-100 bg-white p-5 md:hidden
+}
+
+/* === ALIGNMENTS*/
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
+.flex-between {
+  @apply flex justify-between items-center;
+}
+
+
+
+/* =====  CLERK OVERRIDES */
+.cl-userButtonBox {
+  display: flex;
+  flex-flow: row-reverse;
+  gap: 20px;
+}
+
+.cl-userButtonOuterIdentifier {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+}
