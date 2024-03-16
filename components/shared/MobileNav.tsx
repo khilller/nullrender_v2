@@ -52,7 +52,7 @@ const MobileNav = () => {
         </Link>
         <nav className='flex gap-2'>
             <SignedIn>
-
+                <UserButton afterSignOutUrl='/' />
                 <Sheet>
                     <SheetTrigger>
                         <Menu size={24} strokeWidth={2.5} className='cursor-pointer'/>
@@ -89,7 +89,7 @@ const MobileNav = () => {
 
                                 })}
                                 <li className='flex justify-between cursor-pointer gap-2 p-4'>
-                                    <UserButton afterSignOutUrl='/' showName />
+                                    
                                 </li>
                             </ul>
                                     
