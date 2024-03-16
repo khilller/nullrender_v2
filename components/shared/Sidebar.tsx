@@ -2,7 +2,7 @@
 
 import { navLinks } from '@/constants'
 import { SignedIn, UserButton } from '@clerk/nextjs'
-import { Bolt, Building2, HandCoins, Laugh, LayoutDashboard } from 'lucide-react'
+import { Bolt, Building2, HandCoins, Laugh, LayoutDashboard, PencilRuler } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -22,6 +22,8 @@ const Sidebar = () => {
                 return <Laugh className='text-orange-700' />
             case 'buy':
                 return <HandCoins className='text-yellow-400'/>
+            case 'sketch':
+                return <PencilRuler className='text-green-500'/>
             default:
                 return null;
         }
@@ -44,7 +46,7 @@ const Sidebar = () => {
             <div className='flex flex-col justify-between h-full'>
                 
                     <ul className='sidebar-nav_elements'>
-                        {navLinks.slice(0, 2).map((link, index) => {
+                        {navLinks.slice(0, 3).map((link, index) => {
                             const isActive = pathname === link.route
                             return (
                                 <li 
@@ -63,7 +65,7 @@ const Sidebar = () => {
                         })}
                     </ul>
                     <ul className='sidebar-nav_elements'>
-                        {navLinks.slice(2).map((link, index) => {
+                        {navLinks.slice(3).map((link, index) => {
                             const isActive = pathname === link.route
 
                             return (

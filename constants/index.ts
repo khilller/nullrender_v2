@@ -10,6 +10,13 @@ export const navLinks = [
         icon: 'exterior'
     },
     {
+        label: 'Sketch to Image Render',
+        route: '/sketch',
+        icon: 'sketch'
+
+    },
+
+    {
         label: 'Dashboard',
         route: '/dashboard',
         icon: 'dashboard'
@@ -23,17 +30,10 @@ export const navLinks = [
 
 export const resolutionOptions = [
     {
-        label: "256x256",
-        value: "256",
-    },
-    {
         label: "512x512",
         value: "512",
     },
-    {
-        label: "1024x1024",
-        value: "1024",
-    },
+
 ]
 
 export const amountOptions = [
@@ -49,15 +49,15 @@ export const amountOptions = [
 
 export const stepOptions = [
     {
-        label: "10",
-        value: "10",
-    },
-    {
         label:"15",
         value: "15",
     },
     {
         label: "20",
         value: "20",
+    },
+    {
+        label: "25",
+        value: "25",
     }
 ]
