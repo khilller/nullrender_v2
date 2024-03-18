@@ -56,7 +56,7 @@ const MediaUploader = ({onValueChange, setImage, publicId}: MediaUploaderProps) 
     }
   return (
     <CldUploadWidget
-        uploadPreset='nullrender'
+        uploadPreset='nullrender_v1'
         options={{
             multiple: false,
             resourceType: 'image',

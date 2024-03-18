@@ -7,7 +7,8 @@ const nextConfig = {
                 hostname: 'replicate.delivery',
                 port: ''
             }
-        ]
+        ],
+        domains: ['api.replicate.delivery', 'api.replicate.com']
     }
 };
 

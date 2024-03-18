@@ -50,11 +50,30 @@ const formSchema = z.object({
   interface path {
     path: string
   }
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+  type PredictionType = {
+    completed_at: string;
+    created_at: string;
+    error: string | null;
+    id: string;
+    input: any; // replace 'any' with the actual type if you know it
+    logs: string;
+    metrics: { predict_time: number };
+    model: string;
+    output: string[];
+    started_at: string;
+    status: string;
+    urls: { cancel: string; get: string };
+    version: string;
+  };
 
 const TransformationInterior = () => {
 
 
     const [images, setImages] = React.useState<string[]>([])
+    const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
+    const [error, setError] = React.useState(null)
 
     const { toast } = useToast()
 
@@ -82,10 +101,38 @@ const TransformationInterior = () => {
         try {
             setImages([])
             console.log(values)
-            const response = await axios.post("/api/depthmap", values)
 
-            console.log(response.data)
-            setImages(response.data)
+            const response = await fetch("/api/depthmap", {
+                method: "POST",
+                body: JSON.stringify(values)
+            })
+
+            let prediction = await response.json()
+
+            if (response.status !== 201) {
+                setError(prediction.default)
+                return
+            }
+
+            setPrediction(prediction)
+
+            while (
+                prediction.status !== "succeeded" && prediction.status !== "failed"
+            ) {
+                await sleep(1000);
+                const response = await fetch("/api/depthmap/"+ prediction.id, {cache: 'no-store'} )
+                prediction = await response.json()
+                if (response.status !== 200) {
+                    setError(prediction.detail)
+                    return
+                }
+                console.log({prediction})
+                setPrediction(prediction)
+                console.log(prediction.output)
+                setImages(prediction.output)
+                console.log(images)
+
+            }
 
         } catch (error) {
             console.error(error)
@@ -211,12 +258,8 @@ const TransformationInterior = () => {
 
             )}
 
-            {images.length === 0 && !isLoading && (
-                <div>
-
-                </div>
-            )}
-            {images.length > 0 && (
+             
+            {prediction && prediction.status === 'succeeded' &&(
                 <div className='space-y-4 mt-4 p-4 border rounded-lg'>
                 <div>
                     <h2 className='text-lg text-center'>Generated Images!</h2>
