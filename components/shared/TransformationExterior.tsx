@@ -52,11 +52,32 @@ const formSchema = z.object({
     path: string
   }
 
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+  type PredictionType = {
+    completed_at: string;
+    created_at: string;
+    error: string | null;
+    id: string;
+    input: any; // replace 'any' with the actual type if you know it
+    logs: string;
+    metrics: { predict_time: number };
+    model: string;
+    output: string[];
+    started_at: string;
+    status: string;
+    urls: { cancel: string; get: string };
+    version: string;
+  };
+
 const TransformationExterior = () => {
 
     const proModal = useProModal()
 
     const [images, setImages] = React.useState<string[]>([])
+    const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
+    const [error, setError] = React.useState(null)
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
 
     const { toast } = useToast()
 
@@ -64,6 +85,12 @@ const TransformationExterior = () => {
 
     //cloudinary
     const [info, setInfo] = React.useState();
+
+    React.useEffect(() => {
+        if (images && images.length > 0) {
+          router.refresh();
+        }
+      }, [images]);
     
 
       // 1. Define your form.
@@ -81,22 +108,50 @@ const TransformationExterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true)
         try {
             setImages([])
-            console.log(values)
-            const response = await axios.post("/api/hough", values)
-
-            console.log(response.data)
-            setImages(response.data)
-
+        
+            const response = await fetch("/api/hough", {
+                method: "POST",
+                body: JSON.stringify(values)
+            })
+        
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 403) {
+                    // Handle the free trial expired error
+                    console.error(errorData);
+                    proModal.onOpen();
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+            } else {
+                const initialPrediction = await response.json();
+                
+                setPrediction(initialPrediction)
+                
+                while (
+                    initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed"
+                    ) {
+                        await sleep(1000);
+                        const updateResponse = await fetch(`/api/hough/${initialPrediction.id}`, {cache: 'no-store'} )
+                        const updatedPrediction = await updateResponse.json()
+                        if (updateResponse.status !== 200) {
+                            setError(updatedPrediction.detail)
+                            return
+                        }
+                        setPrediction(updatedPrediction)
+                        setImages(updatedPrediction.output)
+                        router.refresh()
+                    }
+                }
+                setIsSubmitting(false)
+        
         } catch (error:any) {
-            if (error?.response?.status === 403) {
-                proModal.onOpen()
-            }
+            
         }
-         finally {
-            router.refresh()
-         }
+        
     }
 
   return (
@@ -208,19 +263,14 @@ const TransformationExterior = () => {
             </Form>
         </div>
         <div className='space-y-4 mt-4'>
-            {isLoading && (
+            {prediction && prediction.status!== "succeeded" && (
                 <div className='p-8 rounded-lg w-full flex items-center justify-center'>
                     <Loader />
                 </div>
 
             )}
 
-            {images.length === 0 && !isLoading && (
-                <div>
-
-                </div>
-            )}
-            {images.length > 0 && (
+            {prediction && prediction.status === "succeeded" && (
                 <div className='space-y-4 mt-10 border rounded-lg p-4'>
                     <div>
                         <h2 className='text-3xl font-bold text-center'>Generated Images</h2>
@@ -245,8 +295,8 @@ const TransformationExterior = () => {
                             </Card>
                         
                         ))}
+                    </div>
                 </div>
-            </div>
             )}
         </div>
     </div>

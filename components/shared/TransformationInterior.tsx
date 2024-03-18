@@ -34,8 +34,10 @@ import { CldUploadWidget, CldImage } from 'next-cloudinary'
 import MediaUploader from './MediaUploader'
 import Image from 'next/image'
 import { Download } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+
 import Loader from './Loader'
+import { useProModal } from '@/hooks/use-pro-modal'
+import { useRouter } from 'next/navigation'
   
 
 const formSchema = z.object({
@@ -70,10 +72,13 @@ const formSchema = z.object({
 
 const TransformationInterior = () => {
 
+    const proModal = useProModal()
+
 
     const [images, setImages] = React.useState<string[]>([])
     const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
     const [error, setError] = React.useState(null)
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
 
     const { toast } = useToast()
 
@@ -81,6 +86,12 @@ const TransformationInterior = () => {
 
     //cloudinary
     const [info, setInfo] = React.useState();
+
+    React.useEffect(() => {
+        if (images && images.length > 0) {
+          router.refresh();
+        }
+      }, [images]);
     
 
       // 1. Define your form.
@@ -98,48 +109,50 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true)
         try {
             setImages([])
-            console.log(values)
-
+        
             const response = await fetch("/api/depthmap", {
                 method: "POST",
                 body: JSON.stringify(values)
             })
-
-            let prediction = await response.json()
-
-            if (response.status !== 201) {
-                setError(prediction.default)
-                return
-            }
-
-            setPrediction(prediction)
-
-            while (
-                prediction.status !== "succeeded" && prediction.status !== "failed"
-            ) {
-                await sleep(1000);
-                const response = await fetch("/api/depthmap/"+ prediction.id, {cache: 'no-store'} )
-                prediction = await response.json()
-                if (response.status !== 200) {
-                    setError(prediction.detail)
-                    return
+        
+            if (!response.ok) {
+                const errorData = await response.json();
+                if (response.status === 403) {
+                    // Handle the free trial expired error
+                    console.error(errorData);
+                    proModal.onOpen();
+                } else {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                console.log({prediction})
-                setPrediction(prediction)
-                console.log(prediction.output)
-                setImages(prediction.output)
-                console.log(images)
-
-            }
-
-        } catch (error) {
-            console.error(error)
+            } else {
+                const initialPrediction = await response.json();
+                
+                setPrediction(initialPrediction)
+                
+                while (
+                    initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed"
+                    ) {
+                        await sleep(1000);
+                        const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, {cache: 'no-store'} )
+                        const updatedPrediction = await updateResponse.json()
+                        if (updateResponse.status !== 200) {
+                            setError(updatedPrediction.detail)
+                            return
+                        }
+                        setPrediction(updatedPrediction)
+                        setImages(updatedPrediction.output)
+                        router.refresh()
+                    }
+                }
+                setIsSubmitting(false)
+        
+        } catch (error:any) {
+            
         }
-         finally {
-            router.refresh()
-         }
+        
     }
 
   return (
@@ -157,7 +170,7 @@ const TransformationInterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isLoading}
+                            disabled={isSubmitting}
                             />
                     </FormControl>
                     </FormItem>
@@ -169,7 +182,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isLoading}
+                                disabled={isSubmitting}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -199,7 +212,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isLoading}
+                                disabled={isSubmitting}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -243,7 +256,7 @@ const TransformationInterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     >
                         Generate
                 </Button>
@@ -260,9 +273,9 @@ const TransformationInterior = () => {
 
              
             {prediction && prediction.status === 'succeeded' &&(
-                <div className='space-y-4 mt-4 p-4 border rounded-lg'>
+                <div className='space-y-4 mt-10 border rounded-lg p-4'>
                 <div>
-                    <h2 className='text-lg text-center'>Generated Images!</h2>
+                    <h2 className='text-3xl font-bold text-center'>Generated Images</h2>
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-2 gap-4 mt-8'>
                     {images.slice(1).map((image, index) => (
@@ -271,8 +284,7 @@ const TransformationInterior = () => {
                                 <Image
                                     alt="Generated Image"
                                     src={image}
-                                    width={512}
-                                    height={512}
+                                    fill
                                     />
                             </div>
                             <CardFooter>

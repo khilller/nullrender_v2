@@ -31,9 +31,8 @@ export async function POST(req: Request) {
             return new NextResponse("Free trial has expired", { status: 403 });
         }
 
-        const response = await replicate.run(
-            "jagilley/controlnet-hough:854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
-            {
+        const prediction = await replicate.predictions.create({
+            version:"854e8727697a057c525cdb45ab037f64ecca770a1769cc52287c2e56472a247b",
               input: {
                 eta: 0,
                 image: secure_url,
@@ -48,11 +47,18 @@ export async function POST(req: Request) {
                 detect_resolution: 512,
                 distance_threshold: 0.1,
               }
-            }
-          );
+            
+          });
+
           await incrementApiLimit();
 
-          return NextResponse.json(response);
+          if (prediction?.error) {
+            return new Response(
+              JSON.stringify({detail: prediction.error.detail}),{ status: 500}
+            )
+        }
+
+        return new NextResponse(JSON.stringify(prediction), { status: 201 });
 
     } catch (error) {
         console.error("[Image Render Error]",error)

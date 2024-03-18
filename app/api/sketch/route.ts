@@ -32,9 +32,8 @@ export async function POST(req: Request) {
         }
 
 
-        const response = await replicate.run(
-            "jagilley/controlnet-scribble:435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
-            {
+        const prediction = await replicate.predictions.create({
+            version:"435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117",
               input: {
                 eta: 0,
                 image: secure_url,
@@ -46,12 +45,18 @@ export async function POST(req: Request) {
                 num_samples: amount,
                 image_resolution: "512",
 
-              }
+              
             }
-          );
+          });
           await incrementApiLimit();
 
-          return NextResponse.json(response);
+          if (prediction?.error) {
+            return new Response(
+              JSON.stringify({detail: prediction.error.detail}),{ status: 500}
+            )
+        }
+
+        return new NextResponse(JSON.stringify(prediction), { status: 201 });
 
     } catch (error) {
         console.error("[Image Render Error]",error)
