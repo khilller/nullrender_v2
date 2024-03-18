@@ -18,17 +18,17 @@ export async function POST(req: Request) {
 
 
         if(!userId){
-            return new NextResponse("Unauthorized", { status: 401 });
+            return new NextResponse(JSON.stringify("Unauthorized"), { status: 401 });
         }
 
         if(!prompt || !amount || !steps || !secure_url){
-            return new NextResponse("Missing required fields", { status: 400 });
+            return new NextResponse(JSON.stringify("Missing required fields"), { status: 400 });
         }
 
         const freeTrial = await checkApiLimit();
 
         if(!freeTrial){
-            return new NextResponse("Free trial has expired", { status: 403 });
+            return new NextResponse(JSON.stringify("Free trial has expired"), { status: 403 });
         }
 
         const prediction = await replicate.predictions.create({
