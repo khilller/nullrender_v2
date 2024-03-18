@@ -144,7 +144,7 @@ const Sketch2img = () => {
                         }
                         setPrediction(updatedPrediction)
                         setImages(updatedPrediction.output)
-                        //setIsSubmitting(false)
+                        
                     }
                 }
                 console.log(isSubmitting)

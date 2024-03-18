@@ -143,7 +143,7 @@ const TransformationExterior = () => {
                         }
                         setPrediction(updatedPrediction)
                         setImages(updatedPrediction.output)
-                        router.refresh()
+                        
                     }
                 }
                 setIsSubmitting(false)

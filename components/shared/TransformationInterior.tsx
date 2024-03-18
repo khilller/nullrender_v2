@@ -144,7 +144,6 @@ const TransformationInterior = () => {
                         }
                         setPrediction(updatedPrediction)
                         setImages(updatedPrediction.output)
-                        router.refresh()
                     }
                 }
                 setIsSubmitting(false)
@@ -170,7 +169,7 @@ const TransformationInterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isSubmitting}
+                            disabled={isLoading}
                             />
                     </FormControl>
                     </FormItem>
@@ -182,7 +181,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isSubmitting}
+                                disabled={isLoading}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -212,7 +211,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isSubmitting}
+                                disabled={isLoading}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -256,7 +255,7 @@ const TransformationInterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isSubmitting}
+                    disabled={isLoading}
                     >
                         Generate
                 </Button>
