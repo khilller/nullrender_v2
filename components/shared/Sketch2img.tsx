@@ -128,6 +128,7 @@ const Sketch2img = () => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
             } else {
+                router.refresh()
                 const initialPrediction = await response.json();
                 
                 setPrediction(initialPrediction)

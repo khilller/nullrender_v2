@@ -18,7 +18,7 @@ const DashboardLayout = async ({
             </div>
         </div>
         <main className='md:pl-72'>
-            <MobileNav />
+            <MobileNav apiLimitCount={apiLimitCount}/>
             {children}
         </main>
     </section>
