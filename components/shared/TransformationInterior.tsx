@@ -103,7 +103,7 @@ const TransformationInterior = () => {
       
               const updatedPrediction = await updateResponse.json();
               setPrediction(updatedPrediction);
-              console.log('Updated prediction:', prediction);
+              //console.log('Updated prediction:', prediction);
       
               if (updatedPrediction.status === 'succeeded' || updatedPrediction.status === 'failed') {
                 clearInterval(interval);
@@ -115,7 +115,7 @@ const TransformationInterior = () => {
               console.error('Error:', error);
               clearInterval(interval);
             }
-          }, 1000); // Poll every second
+          }, 2000); // Poll every second
         }
       
         return () => {
@@ -180,7 +180,7 @@ const TransformationInterior = () => {
       
           // Store initial prediction state
           setPrediction(initialPrediction);
-          console.log('Initial prediction:', initialPrediction);
+          //console.log('Initial prediction:', initialPrediction);
       
         } catch (error: any) {
           console.error('Error:', error);
