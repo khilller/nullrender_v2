@@ -86,6 +86,43 @@ const TransformationExterior = () => {
     const [info, setInfo] = React.useState();
 
     React.useEffect(() => {
+        let interval: NodeJS.Timeout | undefined;
+        if(prediction?.status !== "succeeded" && prediction?.status !== 'failed') {
+          interval = setInterval(async () => {
+            try {
+              const updateResponse = await fetch(`/api/hough/${prediction?.id}`, {
+                cache: 'no-store',
+              });
+              
+              if (!updateResponse.ok) {
+                throw new Error(`HTTP error! status: ${updateResponse.status}`);
+              }
+      
+              const updatedPrediction = await updateResponse.json();
+              setPrediction(updatedPrediction);
+              //console.log('Updated prediction:', prediction);
+      
+              if (updatedPrediction.status === 'succeeded' || updatedPrediction.status === 'failed') {
+                clearInterval(interval);
+                if (updatedPrediction.status === 'succeeded') {
+                  setImages(updatedPrediction.output);
+                }
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              clearInterval(interval);
+            }
+          }, 1000); // Poll every second
+        }
+      
+        return () => {
+          if(interval) {
+            clearInterval(interval); // Clear the interval if the component is unmounted
+          }
+        };
+      }, [prediction]);
+
+    React.useEffect(() => {
         if (images && images.length > 0) {
           router.refresh();
         }
@@ -106,72 +143,42 @@ const TransformationExterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setIsSubmitting(true)
+        setIsSubmitting(true);
 
         try {
-            setImages([])
-
-            const response = await fetch('/api/hough', {
-                method: 'POST',
-                body: JSON.stringify(values),
-            })
-
-            if(!response.ok) {
-                const errorData = await response.json()
-                if (response.status === 403) {
-                    console.error("Free trial has expired:", errorData)
-                    proModal.onOpen()
-                    setIsSubmitting(false)
-                    return;
-                } else {
-                    const error = new Error(`HTTP error! status: ${response.status}`);
-                    setIsSubmitting(false)
-                    throw error;
-                }
-            }
-
-            const initialPrediction = await response.json()
-            setPrediction(initialPrediction)
-
-            let attempts = 0;
-            let maxAttempts = 60;
-
-            while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed" && attempts < maxAttempts) {
-                await sleep(1000);
-                const updateResponse = await fetch(`/api/hough/${initialPrediction.id}`, {cache: 'no-store'});
-
-                if(!updateResponse.ok) {
-                    const errorData = await updateResponse.json()
-                    setError(errorData.detail)
-                    setIsSubmitting(false)
-                    break;
-                }
-
-                const updatedPrediction = await updateResponse.json()
-
-                console.log('Attempt:', attempts, 'Status:', updatedPrediction.status)
-                setPrediction(updatedPrediction)
-
-                if (updatedPrediction.status === "succeeded") {
-                    setImages(updatedPrediction.output);
-                    break;
-                } else if (updatedPrediction.status === "failed") {
-                    console.error('Prediction failed:', updatedPrediction.error)
-                    break;
-                }
-                attempts++;
-            }
-
-                if (attempts >= maxAttempts) {
-                    console.error('Prediction failed: Max attempts reached')
-                    setPrediction(null)
-                }
-
-
-        } catch (error:any) {
-            console.error('Error:', error)
-        } finally {
-            setIsSubmitting(false)
+          // Clear previous images
+          setImages([]);
+      
+          // Start the prediction task
+          const response = await fetch('/api/hough', {
+            method: 'POST',
+            body: JSON.stringify(values),
+          });
+      
+          if(!response.ok) {
+            const errorData = await response.json()
+            if (response.status === 403) {
+                console.error("Free trial expires:", errorData)
+                proModal.onOpen()
+                setIsSubmitting(false)
+                return;
+            } else {
+            const error = new Error(`HTTP error! status: ${response.status}`)
+            setIsSubmitting(false);
+            throw error;
+        }
+    }
+      
+          const initialPrediction = await response.json();
+          setIsSubmitting(false); // Prediction task is started, no longer submitting
+      
+          // Store initial prediction state
+          setPrediction(initialPrediction);
+          //console.log('Initial prediction:', initialPrediction);
+      
+        } catch (error: any) {
+          console.error('Error:', error);
+          setIsSubmitting(false);
         }
     }
 

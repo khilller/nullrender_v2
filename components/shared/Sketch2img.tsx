@@ -100,7 +100,7 @@ const Sketch2img = () => {
       
               const updatedPrediction = await updateResponse.json();
               setPrediction(updatedPrediction);
-              console.log('Updated prediction:', prediction);
+              //console.log('Updated prediction:', prediction);
       
               if (updatedPrediction.status === 'succeeded' || updatedPrediction.status === 'failed') {
                 clearInterval(interval);
