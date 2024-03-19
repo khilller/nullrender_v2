@@ -78,6 +78,8 @@ const TransformationInterior = () => {
     const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
     const [error, setError] = React.useState(null)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const [isProcessing, setIsProcessing] = React.useState(false)
+    const [taskId, setTaskId] = React.useState<string | null>(null)
 
     const { toast } = useToast()
 
@@ -87,10 +89,51 @@ const TransformationInterior = () => {
     const [info, setInfo] = React.useState();
 
     React.useEffect(() => {
+        if (!isProcessing || !taskId) return;
+    
+        const intervalId = setInterval(async () => {
+          try {
+            const response = await fetch(`/api/depthmap/${taskId}`, { cache: 'no-store' });
+            const updatedPrediction = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(updatedPrediction.message || 'Error fetching prediction status');
+            }
+    
+            setPrediction(updatedPrediction);
+            console.log('Updated prediction:', updatedPrediction);
+    
+            // If we reach a complete state, update the images and stop polling
+            if (updatedPrediction.status === 'succeeded') {
+              setImages(updatedPrediction.output);
+              setIsProcessing(false);
+            } else if (updatedPrediction.status === 'failed') {
+              console.error('Prediction failed:', updatedPrediction);
+              setIsProcessing(false);
+            }
+          } catch (error) {
+            console.error('Polling error:', error);
+            setIsProcessing(false);
+          }
+        }, 1000);
+    
+        return () => clearInterval(intervalId); // Clean up interval on component unmount
+      }, [taskId, isProcessing]);
+
+
+    React.useEffect(() => {
         if (images && images.length > 0) {
           router.refresh();
+          
         }
       }, [images]);
+
+      React.useEffect(() => {
+        return () => {
+          setIsProcessing(false); // Reset processing state
+          setTaskId(null);       // Reset task ID
+        };
+      }, []);
     
 
       // 1. Define your form.
