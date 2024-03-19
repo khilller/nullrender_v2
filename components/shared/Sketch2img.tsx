@@ -77,6 +77,9 @@ const Sketch2img = () => {
     const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
     const [error, setError] = React.useState(null)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const [isProcessing, setIsProcessing] = React.useState(false)
+    const [taskId, setTaskId] = React.useState<string | null>(null)
+
 
     const { toast } = useToast()
 
@@ -86,42 +89,36 @@ const Sketch2img = () => {
     const [info, setInfo] = React.useState();
 
     React.useEffect(() => {
-        let interval: NodeJS.Timeout | undefined;
-        if(prediction?.status !== "succeeded" && prediction?.status !== 'failed') {
-          interval = setInterval(async () => {
-            try {
-              const updateResponse = await fetch(`/api/sketch/${prediction?.id}`, {
-                cache: 'no-store',
-              });
-              
-              if (!updateResponse.ok) {
-                throw new Error(`HTTP error! status: ${updateResponse.status}`);
-              }
-      
-              const updatedPrediction = await updateResponse.json();
-              setPrediction(updatedPrediction);
-              console.log('Updated prediction:', prediction);
-      
-              if (updatedPrediction.status === 'succeeded' || updatedPrediction.status === 'failed') {
-                clearInterval(interval);
-                if (updatedPrediction.status === 'succeeded') {
-                  setImages(updatedPrediction.output);
-                }
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              clearInterval(interval);
+        if (!isProcessing || !taskId) return;
+    
+        const intervalId = setInterval(async () => {
+          try {
+            const response = await fetch(`/api/sketch/${taskId}`, { cache: 'no-store' });
+            const updatedPrediction = await response.json();
+            
+            if (!response.ok) {
+              throw new Error(updatedPrediction.message || 'Error fetching prediction status');
             }
-          }, 1000); // Poll every second
-        }
-      
-        return () => {
-          if(interval) {
-            clearInterval(interval); // Clear the interval if the component is unmounted
+    
+            setPrediction(updatedPrediction);
+            console.log('Updated prediction:', updatedPrediction);
+    
+            // If we reach a complete state, update the images and stop polling
+            if (updatedPrediction.status === 'succeeded') {
+              setImages(updatedPrediction.output);
+              setIsProcessing(false);
+            } else if (updatedPrediction.status === 'failed') {
+              console.error('Prediction failed:', updatedPrediction);
+              setIsProcessing(false);
+            }
+          } catch (error) {
+            console.error('Polling error:', error);
+            setIsProcessing(false);
           }
-        };
-      }, [prediction]);
-
+        }, 1000);
+    
+        return () => clearInterval(intervalId); // Clean up interval on component unmount
+      }, [taskId, isProcessing]);
 
 
     React.useEffect(() => {
@@ -130,6 +127,13 @@ const Sketch2img = () => {
           
         }
       }, [images]);
+
+      React.useEffect(() => {
+        return () => {
+          setIsProcessing(false); // Reset processing state
+          setTaskId(null);       // Reset task ID
+        };
+      }, []);
     
 
       // 1. Define your form.
@@ -176,7 +180,9 @@ const Sketch2img = () => {
           setIsSubmitting(false); // Prediction task is started, no longer submitting
       
           // Store initial prediction state
-          setPrediction(initialPrediction);
+            setPrediction(initialPrediction);
+            setTaskId(initialPrediction.id);
+            setIsProcessing(true);
           console.log('Initial prediction:', initialPrediction);
       
         } catch (error: any) {
