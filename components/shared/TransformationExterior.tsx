@@ -45,7 +45,6 @@ const formSchema = z.object({
     }),
     amount: z.string().min(1),
     secure_url: z.string(),
-    steps: z.string()
   })
 
   interface path {
@@ -99,7 +98,6 @@ const TransformationExterior = () => {
         defaultValues: {
         prompt: "",
         amount: "1",
-        steps: "15",
         secure_url: "",
         },
     })
@@ -109,50 +107,72 @@ const TransformationExterior = () => {
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true)
+
         try {
             setImages([])
-        
-            const response = await fetch("/api/hough", {
-                method: "POST",
-                body: JSON.stringify(values)
+
+            const response = await fetch('/api/hough', {
+                method: 'POST',
+                body: JSON.stringify(values),
             })
-        
-            if (!response.ok) {
-                const errorData = await response.json();
+
+            if(!response.ok) {
+                const errorData = await response.json()
                 if (response.status === 403) {
-                    // Handle the free trial expired error
-                    console.error(errorData);
-                    proModal.onOpen();
+                    console.error("Free trial has expired:", errorData)
+                    proModal.onOpen()
+                    setIsSubmitting(false)
+                    return;
                 } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const error = new Error(`HTTP error! status: ${response.status}`);
+                    setIsSubmitting(false)
+                    throw error;
                 }
-            } else {
-                router.refresh()
-                const initialPrediction = await response.json();
-                
-                setPrediction(initialPrediction)
-                
-                while (
-                    initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed"
-                    ) {
-                        await sleep(1000);
-                        const updateResponse = await fetch(`/api/hough/${initialPrediction.id}`, {cache: 'no-store'} )
-                        const updatedPrediction = await updateResponse.json()
-                        if (updateResponse.status !== 200) {
-                            setError(updatedPrediction.detail)
-                            return
-                        }
-                        setPrediction(updatedPrediction)
-                        setImages(updatedPrediction.output)
-                        
-                    }
+            }
+
+            const initialPrediction = await response.json()
+            setPrediction(initialPrediction)
+
+            let attempts = 0;
+            let maxAttempts = 60;
+
+            while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed" && attempts < maxAttempts) {
+                await sleep(1000);
+                const updateResponse = await fetch(`/api/hough/${initialPrediction.id}`, {cache: 'no-store'});
+
+                if(!updateResponse.ok) {
+                    const errorData = await updateResponse.json()
+                    setError(errorData.detail)
+                    setIsSubmitting(false)
+                    break;
                 }
-                setIsSubmitting(false)
-        
+
+                const updatedPrediction = await updateResponse.json()
+
+                console.log('Attempt:', attempts, 'Status:', updatedPrediction.status)
+                setPrediction(updatedPrediction)
+
+                if (updatedPrediction.status === "succeeded") {
+                    setImages(updatedPrediction.output);
+                    break;
+                } else if (updatedPrediction.status === "failed") {
+                    console.error('Prediction failed:', updatedPrediction.error)
+                    break;
+                }
+                attempts++;
+            }
+
+                if (attempts >= maxAttempts) {
+                    console.error('Prediction failed: Max attempts reached')
+                    setPrediction(null)
+                }
+
+
         } catch (error:any) {
-            
+            console.error('Error:', error)
+        } finally {
+            setIsSubmitting(false)
         }
-        
     }
 
   return (
@@ -194,36 +214,6 @@ const TransformationExterior = () => {
                                 </FormControl>
                                 <SelectContent>
                                     {amountOptions.map((option) => (
-                                        <SelectItem key={option.value} value={option.value}>
-                                            {option.label}
-
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-
-                            </Select>
-
-                        </FormItem>
-                    )}
-                />
-                <FormField 
-                    control={form.control}
-                    name="steps"
-                    render={({ field }) => (
-                        <FormItem className='col-span-12 lg:col-span-2 w-full'>
-                            <Select
-                                disabled={isLoading}
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                defaultValue={field.value}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue defaultValue={field.value} />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {stepOptions.map((option) => (
                                         <SelectItem key={option.value} value={option.value}>
                                             {option.label}
 

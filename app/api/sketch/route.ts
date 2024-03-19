@@ -12,16 +12,16 @@ export async function POST(req: Request) {
     try{
         const { userId } = auth()
         const body = await req.json()
-        let { prompt, amount, steps, secure_url } = body;
+        let { prompt, amount, secure_url } = body;
 
-        steps = Number(steps);
+        
 
 
         if(!userId){
             return new NextResponse(JSON.stringify("Unauthorized"), { status: 401 });
         }
 
-        if(!prompt || !amount || !steps || !secure_url){
+        if(!prompt || !amount || !secure_url){
             return new NextResponse(JSON.stringify("Missing required fields"), { status: 400 });
         }
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
                 prompt: prompt,
                 a_prompt: "best quality, extremely detailed, architectural renders",
                 n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
-                ddim_steps: steps,
+                ddim_steps: 25,
                 num_samples: amount,
                 image_resolution: "512",
 

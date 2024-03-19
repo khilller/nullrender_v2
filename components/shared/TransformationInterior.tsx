@@ -46,7 +46,6 @@ const formSchema = z.object({
     }),
     amount: z.string().min(1),
     secure_url: z.string(),
-    steps: z.string()
   })
 
   interface path {
@@ -100,7 +99,6 @@ const TransformationInterior = () => {
         defaultValues: {
         prompt: "",
         amount: "1",
-        steps: "15",
         secure_url: "",
         },
     })
@@ -137,7 +135,7 @@ const TransformationInterior = () => {
         setPrediction(initialPrediction)
 
         let attempts = 0;
-        let maxAttempts = 30;
+        let maxAttempts = 60;
 
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed" && attempts < maxAttempts) {
             await sleep(1000);
@@ -165,6 +163,7 @@ const TransformationInterior = () => {
         }
             if (attempts >= maxAttempts) {
                 console.error('Prediction took too long to complete')
+                setPrediction(null)
             }
 
         } catch (error:any) {
@@ -172,51 +171,6 @@ const TransformationInterior = () => {
         } finally {
             setIsSubmitting(false)
         }
-
-        /*
-        setIsSubmitting(true)
-        try {
-            setImages([])
-        
-            const response = await fetch("/api/depthmap", {
-                method: "POST",
-                body: JSON.stringify(values)
-            })
-        
-            if (!response.ok) {
-                const errorData = await response.json();
-                if (response.status === 403) {
-                    // Handle the free trial expired error
-                    console.error(errorData);
-                    proModal.onOpen();
-                } else {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-            } else {
-                router.refresh()
-                const initialPrediction = await response.json();
-                
-                setPrediction(initialPrediction)
-                
-                while (
-                    initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed"
-                    ) {
-                        await sleep(1000);
-                        const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, {cache: 'no-store'} )
-                        const updatedPrediction = await updateResponse.json()
-                        if (updateResponse.status !== 200) {
-                            setError(updatedPrediction.detail)
-                            return
-                        }
-                        setPrediction(updatedPrediction)
-                        setImages(updatedPrediction.output)
-                    }
-                }
-                setIsSubmitting(false)
-        
-        } catch (error:any) {
-            
-        } */
         
     }
 
@@ -259,36 +213,6 @@ const TransformationInterior = () => {
                                 </FormControl>
                                 <SelectContent>
                                     {amountOptions.map((option) => (
-                                        <SelectItem key={option.value} value={option.value}>
-                                            {option.label}
-
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-
-                            </Select>
-
-                        </FormItem>
-                    )}
-                />
-                <FormField 
-                    control={form.control}
-                    name="steps"
-                    render={({ field }) => (
-                        <FormItem className='col-span-12 lg:col-span-2 w-full'>
-                            <Select
-                                disabled={isLoading}
-                                onValueChange={field.onChange}
-                                value={field.value}
-                                defaultValue={field.value}
-                            >
-                                <FormControl>
-                                    <SelectTrigger>
-                                        <SelectValue defaultValue={field.value} />
-                                    </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                    {stepOptions.map((option) => (
                                         <SelectItem key={option.value} value={option.value}>
                                             {option.label}
 
