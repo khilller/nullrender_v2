@@ -109,6 +109,71 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+
+        setIsSubmitting(true)
+
+        try {
+            setImages([])
+
+            const response = await fetch("/api/depthmap", {
+                method: "POST",
+                body: JSON.stringify(values)
+            })
+
+            if(!response.ok) {
+                const errorData = await response.json()
+                if (response.status === 403) {
+                    console.error("Free trial expires:", errorData)
+                    proModal.onOpen()
+                    setIsSubmitting(false)
+                    return;
+                } else {
+                const error = new Error(`HTTP error! status: ${response.status}`)
+                setIsSubmitting(false);
+                throw error;
+            }
+        }
+        const initialPrediction = await response.json()
+        setPrediction(initialPrediction)
+
+        let attempts = 0;
+        let maxAttempts = 30;
+
+        while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed" && attempts < maxAttempts) {
+            await sleep(1000);
+            const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, {cache: 'no-store'} )
+            if(!updateResponse.ok) {
+                const errorData = await updateResponse.json()
+                setError(errorData.detail)
+                setIsSubmitting(false)
+                break;
+            }
+
+            const updatedPrediction = await updateResponse.json()
+
+            console.log('Atempt:', attempts, 'Status:', updatedPrediction.status)
+            setPrediction(updatedPrediction)
+
+            if (updatedPrediction.status === "succeeded") {
+                setImages(updatedPrediction.output);
+                break;
+            } else if (updatedPrediction.status === "failed") {
+                console.error('Prediction failed:', updatedPrediction.error)
+                break;
+            }
+            attempts++;
+        }
+            if (attempts >= maxAttempts) {
+                console.error('Prediction took too long to complete')
+            }
+
+        } catch (error:any) {
+            console.error('Error:', error)
+        } finally {
+            setIsSubmitting(false)
+        }
+
+        /*
         setIsSubmitting(true)
         try {
             setImages([])
@@ -151,7 +216,7 @@ const TransformationInterior = () => {
         
         } catch (error:any) {
             
-        }
+        } */
         
     }
 
