@@ -137,7 +137,7 @@ const Sketch2img = () => {
             let attempts = 0;
             let maxAttempts = 60;
 
-            while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed" && attempts < maxAttempts) {
+            while (prediction?.status !== "succeeded" && prediction?.status !== "failed" && attempts < maxAttempts) {
                 await sleep(1000);
                 const updateResponse = await fetch(`/api/sketch/${initialPrediction.id}`, {cache: 'no-store'});
 
@@ -149,6 +149,8 @@ const Sketch2img = () => {
                 }
 
                 const updatedPrediction = await updateResponse.json()
+
+                console.log(prediction)
 
                 console.log('Attempt:', attempts, 'Status:', updatedPrediction.status)
                 setPrediction(updatedPrediction)

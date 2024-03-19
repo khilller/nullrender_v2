@@ -9,9 +9,11 @@ import { navLinks } from '@/constants';
 import { Card } from '../ui/card';
 import { cn } from '@/lib/utils';
 import { Button } from '../ui/button';
+import axios from 'axios';
 
 const ProModal = () => {
   const proModal = useProModal()
+  const [loading, setLoading] = React.useState(false)
 
   const getIcon = (iconName : string) => {
     switch (iconName) {
@@ -30,6 +32,18 @@ const ProModal = () => {
         default:
             return null;
     }
+}
+
+const onSubscribe = async () => {
+  try {
+    setLoading(true);
+    const response = axios.get('/api/stripe');
+    window.location.href = (await response).data.url;
+  } catch (error) {
+    console.error(error, "Stripe client error");
+  } finally {
+    setLoading(false);
+  }
 }
 
   return (
@@ -61,7 +75,7 @@ const ProModal = () => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button size="lg" variant="premium" className='w-full'>
+          <Button size="lg" variant="premium" className='w-full' onClick={onSubscribe}>
             Upgrade
             <Zap className='w-4 h-4 ml-2 fill-white' />
           </Button>

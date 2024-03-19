@@ -21,7 +21,7 @@ export async function POST(req: Request) {
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        if(!prompt || !amount || !steps || !secure_url){
+        if(!prompt || !amount || !secure_url){
             return new NextResponse("Missing required fields", { status: 400 });
         }
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
                 prompt: prompt,
                 a_prompt: "best quality, extremely detailed",
                 n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
-                ddim_steps: steps,
+                ddim_steps: 25,
                 num_samples: amount,
                 image_resolution: "512",
                 detect_resolution: 512
