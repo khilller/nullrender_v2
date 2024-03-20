@@ -35,9 +35,9 @@ export async function POST(req: Request) {
         
         await prismadb.userSubscription.create({
             data: {
-                userId: session?.metadata?.userId,
+                userId: session.metadata.userId,
+                stripeCustomerId: session.customer as string,
                 stripeSubscriptionId: subscription.id,
-                stripeCustomerId: subscription.customer as string,
                 stripePriceId: subscription.items.data[0].price.id,
                 stripeCurrentPeriodEnd: new Date(subscription.current_period_end * 1000),
             }
@@ -58,5 +58,5 @@ export async function POST(req: Request) {
         })
     }
 
-    return new NextResponse(null, { status: 200 });
+    return new NextResponse("we created an account", { status: 200 });
 }

@@ -88,6 +88,7 @@ const TransformationInterior = () => {
     //cloudinary
     const [info, setInfo] = React.useState();
 
+    /*
     React.useEffect(() => {
         let interval: NodeJS.Timeout | undefined;
         if(prediction?.status !== "succeeded" && prediction?.status !== 'failed') {
@@ -125,6 +126,8 @@ const TransformationInterior = () => {
         };
       }, [prediction]);
 
+      */
+
 
 
     React.useEffect(() => {
@@ -151,6 +154,47 @@ const TransformationInterior = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         setIsSubmitting(true);
 
+        const response = await fetch('/api/depthmap', {
+            method: 'POST',
+            body: JSON.stringify(values),
+        });
+
+        let prediction = await response.json();
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          if (response.status === 403) {
+              console.error("Free trial expires:", errorData)
+              proModal.onOpen()
+              setIsSubmitting(false)
+              return;
+          } else {
+          const error = new Error(`HTTP error! status: ${response.status}`)
+          setIsSubmitting(false);
+          throw error;
+          }
+        }
+
+        setPrediction(prediction);
+
+        let predictionStatus = prediction.status;
+
+        while (predictionStatus !== 'succeeded' && predictionStatus !== 'failed') {
+          await sleep(1000)
+          const response = await fetch(`/api/depthmap/${prediction?.id}`, {cache: 'no-store'})
+
+          prediction = await response.json()
+
+          if (response.status !== 200) {
+            setError(prediction.error)
+            return;
+          }
+          console.log({prediction})
+          setPrediction(prediction)
+          setImages(prediction.output);
+          predictionStatus = prediction.status;
+        }
+      /*
         try {
           // Clear previous images
           setImages([]);
@@ -186,6 +230,7 @@ const TransformationInterior = () => {
           console.error('Error:', error);
           setIsSubmitting(false);
         }
+        */
     }
 
   return (
@@ -265,6 +310,9 @@ const TransformationInterior = () => {
                 </Button>
             </form>
             </Form>
+        </div>
+        <div>
+          <p>status: {prediction?.status}</p>
         </div>
         <div className='space-y-4 mt-4'>
             {prediction && prediction.status !== 'succeeded' && (
