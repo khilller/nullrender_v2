@@ -145,7 +145,7 @@ const TransformationExterior = () => {
           }
 
           setPrediction(initialPrediction)
-          console.log(prediction)
+          console.log(initialPrediction)
           if (initialPrediction.status === "succeeded") {
             setImages(initialPrediction.output)
             return;

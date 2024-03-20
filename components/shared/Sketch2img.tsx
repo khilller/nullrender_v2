@@ -110,55 +110,52 @@ const Sketch2img = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-      const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setIsSubmitting(true);
-          setImages([])
-      
-          const response = await fetch("/api/sketch", {
-            method: "POST",
-            body: JSON.stringify(values)
-          });
-      
-          if (!response.ok) {
-            const errorData = await response.json();
-            if (response.status === 403) {
-              console.error("Free trial expired:", errorData);
-              proModal.onOpen();
-              setIsSubmitting(false);
-              return;
-            } else {
-              const error = new Error(`HTTP error! status: ${response.status}`);
-              setIsSubmitting(false);
-              throw error;
-            }
-          }
-      
-          let initialPrediction = await response.json();
-          setPrediction(initialPrediction);
-          
-          let predictionId = initialPrediction.id;
-          //let attempts = 0;
-          //const maxAttempts = 30;
+      setIsSubmitting(true);
+      setImages([])
   
-          const timer = setInterval(async () => {
-            const response = await fetch ("/api/sketch/" + predictionId)
-            initialPrediction = await response.json()
+      const response = await fetch("/api/sketch", {
+        method: "POST",
+        body: JSON.stringify(values)
+      });
   
-            if (response.status !== 200) {
-              setError(initialPrediction.detail)
-              return
-            }
-  
-            setPrediction(initialPrediction)
-            console.log(prediction)
-            if (initialPrediction.status === "succeeded") {
-              setImages(initialPrediction.output)
-              return;
-            }
-  
-          }, 1000)
-  
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (response.status === 403) {
+          console.error("Free trial expired:", errorData);
+          proModal.onOpen();
+          setIsSubmitting(false);
+          return;
+        } else {
+          const error = new Error(`HTTP error! status: ${response.status}`);
+          setIsSubmitting(false);
+          throw error;
+        }
       }
+  
+      let initialPrediction = await response.json();
+      setPrediction(initialPrediction);
+      
+      let predictionId = initialPrediction.id;
+      //let attempts = 0;
+      //const maxAttempts = 30;
+
+      const timer = setInterval(async () => {
+        const response = await fetch ("/api/sketch/" + predictionId)
+        initialPrediction = await response.json()
+
+        if (response.status !== 200) {
+          setError(initialPrediction.detail)
+          return
+        }
+
+        setPrediction(initialPrediction)
+        console.log(initialPrediction)
+        if (initialPrediction.status === "succeeded") {
+          setImages(initialPrediction.output)
+          return;
+        }
+
+      }, 1000)
     }
     
   return (
