@@ -145,12 +145,13 @@ const TransformationExterior = () => {
           }
 
           setPrediction(initialPrediction)
+          console.log(prediction)
           if (initialPrediction.status === "succeeded") {
             setImages(initialPrediction.output)
             return;
           }
 
-        })
+        }, 1000)
 
     }
 
@@ -233,7 +234,7 @@ const TransformationExterior = () => {
             </Form>
         </div>
         <div>
-          <p>{prediction?.status}</p>
+          <p>status: {prediction?.status}</p>
         </div>
         <div className='space-y-4 mt-4'>
             {prediction && prediction.status!== "succeeded" && (

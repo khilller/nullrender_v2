@@ -155,12 +155,13 @@ const TransformationInterior = () => {
           }
 
           setPrediction(initialPrediction)
+          console.log({prediction})
           if (initialPrediction.status === "succeeded") {
             setImages(initialPrediction.output)
             return;
           }
 
-        })
+        }, 1000)
     }
 
   return (

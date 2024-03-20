@@ -150,12 +150,13 @@ const Sketch2img = () => {
             }
   
             setPrediction(initialPrediction)
+            console.log(prediction)
             if (initialPrediction.status === "succeeded") {
               setImages(initialPrediction.output)
               return;
             }
   
-          })
+          }, 1000)
   
       }
     }
@@ -237,6 +238,9 @@ const Sketch2img = () => {
                 </Button>
             </form>
             </Form>
+        </div>
+        <div>
+          <p>status: {prediction?.status}</p>
         </div>
         <div className='space-y-4 mt-4'>
             {prediction && prediction.status !== 'succeeded' &&  (
