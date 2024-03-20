@@ -135,15 +135,17 @@ const TransformationInterior = () => {
           }
         }
     
-        const initialPrediction = await response.json();
+        let initialPrediction = await response.json();
         setPrediction(initialPrediction);
+
+        let predictionId = initialPrediction.id;
         
         //let attempts = 0;
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(2000); // Make sure you have a function that returns a promise that resolves after a timeout
-          const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, { cache: 'no-store' });
+          await sleep(3000); // Make sure you have a function that returns a promise that resolves after a timeout
+          const updateResponse = await fetch(`/api/depthmap/${predictionId}`, { cache: 'no-store' });
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
             setError(updatedPredictionError.detail);
@@ -154,6 +156,9 @@ const TransformationInterior = () => {
     
           console.log(updatedPrediction.status);
           setPrediction(updatedPrediction);
+
+          // Update the prediction object used in the while loop condition
+          initialPrediction = updatedPrediction;
     
           if (updatedPrediction.status === "succeeded") {
             setImages(updatedPrediction.output);
