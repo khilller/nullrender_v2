@@ -134,8 +134,9 @@ const Sketch2img = () => {
         let initialPrediction = await response.json();
         setPrediction(initialPrediction);
 
+
         let predictionId = initialPrediction.id;
-        
+        console.log({ predictionId });
         //let attempts = 0;
         //const maxAttempts = 30;
     
@@ -150,7 +151,7 @@ const Sketch2img = () => {
     
           const updatedPrediction = await updateResponse.json();
     
-          console.log(updatedPrediction.status);
+          console.log({ updatedPrediction });
           setPrediction(updatedPrediction);
 
           // Update the prediction object used in the while loop condition
