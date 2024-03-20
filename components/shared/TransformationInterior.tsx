@@ -180,7 +180,7 @@ const TransformationInterior = () => {
         let predictionStatus = prediction.status;
 
         while (predictionStatus !== 'succeeded' && predictionStatus !== 'failed') {
-          await sleep(1000)
+          await sleep(2000)
           const response = await fetch(`/api/depthmap/${prediction?.id}`, {cache: 'no-store'})
 
           prediction = await response.json()
