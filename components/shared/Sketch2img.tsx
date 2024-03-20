@@ -110,71 +110,55 @@ const Sketch2img = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-
-      setIsSubmitting(true);
-    try {
-      // API call simulating a POST request to start the prediction process
-      const response = await fetch('/api/sketch', {
-        method: 'POST',
-        body: JSON.stringify(values),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error starting prediction');
-      }
-
-      const initialPrediction = await response.json();
-      setPrediction(initialPrediction);
-
-      // Check the status received from the initial API response
-      if (initialPrediction.status === 'starting') {
-        setIsProcessing(true);  // Begin polling
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-      }
-
-      React.useEffect(() => {
-        if (!isProcessing) {
-          return;  // Skip setting up the interval if not processing
-        }
-    
-        const intervalId = setInterval(async () => {
-          try {
-            const updateResponse = await fetch(`/api/sketch/${prediction?.id}`, {
-              cache: 'no-store',
-            });
-            const updatedPrediction = await updateResponse.json();
-    
-            if (!updateResponse.ok) {
-              throw new Error('Error fetching prediction status');
+      const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true);
+          setImages([])
+      
+          const response = await fetch("/api/sketch", {
+            method: "POST",
+            body: JSON.stringify(values)
+          });
+      
+          if (!response.ok) {
+            const errorData = await response.json();
+            if (response.status === 403) {
+              console.error("Free trial expired:", errorData);
+              proModal.onOpen();
+              setIsSubmitting(false);
+              return;
+            } else {
+              const error = new Error(`HTTP error! status: ${response.status}`);
+              setIsSubmitting(false);
+              throw error;
             }
-    
-            setPrediction(updatedPrediction);  // Update local prediction state
-    
-            // Check if the prediction process has finished
-            if (updatedPrediction.status === 'succeeded' || updatedPrediction.status === 'failed') {
-              clearInterval(intervalId);
-              setIsProcessing(false);  // Stop the polling
-              if (updatedPrediction.status === 'succeeded') {
-                setImages(updatedPrediction.output);  // Save the resulting images
-              }
-            }
-          } catch (error) {
-            console.error(error);
-            setIsProcessing(false);
-            clearInterval(intervalId);
           }
-        }, 1000);
-        // Return a cleanup function that will clear the interval when the component unmounts or before the effect re-runs
-    return () => clearInterval(intervalId);
-  }, [isProcessing, prediction]);
+      
+          let initialPrediction = await response.json();
+          setPrediction(initialPrediction);
+          
+          let predictionId = initialPrediction.id;
+          //let attempts = 0;
+          //const maxAttempts = 30;
+  
+          const timer = setInterval(async () => {
+            const response = await fetch ("/api/sketch/" + predictionId)
+            initialPrediction = await response.json()
+  
+            if (response.status !== 200) {
+              setError(initialPrediction.detail)
+              return
+            }
+  
+            setPrediction(initialPrediction)
+            if (initialPrediction.status === "succeeded") {
+              setImages(initialPrediction.output)
+              return;
+            }
+  
+          })
+  
+      }
+    }
     
   return (
     <div>

@@ -134,29 +134,23 @@ const TransformationExterior = () => {
         let predictionId = initialPrediction.id;
         //let attempts = 0;
         //const maxAttempts = 30;
-        while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(500);
-          const updateResponse = await fetch(`/api/hough/${predictionId}`);
-          const updatedPrediction = await updateResponse.json();
-          if (!updateResponse.ok) {
-            const updatedPredictionError = await updateResponse.json();
-            setError(updatedPredictionError.detail);
-            break;
+
+        const timer = setInterval(async () => {
+          const response = await fetch ("/api/hough/" + predictionId)
+          initialPrediction = await response.json()
+
+          if (response.status !== 200) {
+            setError(initialPrediction.detail)
+            return
           }
-          
-          console.log({ updatedPrediction });
-          setPrediction(updatedPrediction);
-          
-          // Update the initialPrediction object used in the while loop condition
-          initialPrediction = updatedPrediction;
-          
+
+          setPrediction(initialPrediction)
           if (initialPrediction.status === "succeeded") {
-            setImages(initialPrediction.output);
-            break;
-          } 
-        }
-    
-        
+            setImages(initialPrediction.output)
+            return;
+          }
+
+        })
 
     }
 

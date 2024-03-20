@@ -161,32 +161,6 @@ const TransformationInterior = () => {
           }
 
         })
-
-        /*
-    
-        while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(500);
-          const updateResponse = await fetch(`/api/depthmap/${predictionId}`);
-          const updatedPrediction = await updateResponse.json();
-          if (!updateResponse.ok) {
-            const updatedPredictionError = await updateResponse.json();
-            setError(updatedPredictionError.detail);
-            break;
-          }
-          
-          console.log({ updatedPrediction });
-          setPrediction(updatedPrediction);
-          
-          // Update the initialPrediction object used in the while loop condition
-          initialPrediction = updatedPrediction;
-          
-          if (initialPrediction.status === "succeeded") {
-            setImages(initialPrediction.output);
-            break;
-          } 
-        }
-        setIsSubmitting(false);
-        */
     }
 
   return (
