@@ -183,7 +183,7 @@ const TransformationInterior = () => {
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(1000); // Make sure you have a function that returns a promise that resolves after a timeout
+          await sleep(2000); // Make sure you have a function that returns a promise that resolves after a timeout
           const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, { cache: 'no-store' });
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
@@ -193,7 +193,7 @@ const TransformationInterior = () => {
     
           const updatedPrediction = await updateResponse.json();
     
-          console.log('Status:', updatedPrediction.status);
+          console.log(updatedPrediction.status);
           setPrediction(updatedPrediction);
     
           if (updatedPrediction.status === "succeeded") {
