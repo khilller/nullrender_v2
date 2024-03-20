@@ -163,6 +163,7 @@ const TransformationInterior = () => {
           
           if (initialPrediction.status === "succeeded") {
             setImages(initialPrediction.output);
+            break;
           } 
         }
         setIsSubmitting(false);

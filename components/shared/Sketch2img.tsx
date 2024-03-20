@@ -160,6 +160,7 @@ const Sketch2img = () => {
           
           if (initialPrediction.status === "succeeded") {
             setImages(initialPrediction.output);
+            break;
           } 
         }
       }
