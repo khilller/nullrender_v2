@@ -129,36 +129,36 @@ const TransformationExterior = () => {
           }
         }
     
-        const initialPrediction = await response.json();
+        let initialPrediction = await response.json();
         setPrediction(initialPrediction);
         
         //let attempts = 0;
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(2000); // Make sure you have a function that returns a promise that resolves after a timeout
-          const updateResponse = await fetch(`/api/hough/${initialPrediction.id}`, { cache: 'no-store' });
+          await sleep(2000);
+          const updateResponse = await fetch(`/api/hough/${prediction?.id}`, { cache: 'no-store' });
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
             setError(updatedPredictionError.detail);
             break;
           }
-    
+        
           const updatedPrediction = await updateResponse.json();
-    
+        
           console.log(updatedPrediction.status);
           setPrediction(updatedPrediction);
-    
+        
+          // Update the prediction object used in the while loop condition
+          initialPrediction = updatedPrediction;
+        
           if (updatedPrediction.status === "succeeded") {
             setImages(updatedPrediction.output);
             break;
           } else if (updatedPrediction.status === "failed") {
-            // Handle the failure case as needed
             console.error("Prediction failed:", updatedPrediction);
             break;
           }
-    
-          //attempts++;
         }
     
       } catch (error: any) {
