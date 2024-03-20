@@ -132,12 +132,13 @@ const TransformationExterior = () => {
         let initialPrediction = await response.json();
         setPrediction(initialPrediction);
         
+        let predictionId = initialPrediction.id;
         //let attempts = 0;
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
           await sleep(2000);
-          const updateResponse = await fetch(`/api/hough/${prediction?.id}`, { cache: 'no-store' });
+          const updateResponse = await fetch(`/api/hough/${predictionId}`, { cache: 'no-store' });
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
             setError(updatedPredictionError.detail);
@@ -247,6 +248,9 @@ const TransformationExterior = () => {
                 </Button>
             </form>
             </Form>
+        </div>
+        <div>
+          <p>{prediction?.status}</p>
         </div>
         <div className='space-y-4 mt-4'>
             {prediction && prediction.status!== "succeeded" && (
