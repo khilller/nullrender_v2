@@ -152,48 +152,68 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        setIsSubmitting(true);
 
-        const response = await fetch('/api/depthmap', {
-            method: 'POST',
-            body: JSON.stringify(values),
+      setIsSubmitting(true);
+      try {
+        setImages([])
+    
+        const response = await fetch("/api/depthmap", {
+          method: "POST",
+          body: JSON.stringify(values)
         });
-
-        let prediction = await response.json();
-
+    
         if (!response.ok) {
-          const errorData = await response.json()
+          const errorData = await response.json();
           if (response.status === 403) {
-              console.error("Free trial expires:", errorData)
-              proModal.onOpen()
-              setIsSubmitting(false)
-              return;
-          } else {
-          const error = new Error(`HTTP error! status: ${response.status}`)
-          setIsSubmitting(false);
-          throw error;
-          }
-        }
-
-        setPrediction(prediction);
-
-        let predictionStatus = prediction.status;
-
-        while (predictionStatus !== 'succeeded' && predictionStatus !== 'failed') {
-          await sleep(2000)
-          const response = await fetch(`/api/depthmap/${prediction?.id}`, {cache: 'no-store'})
-
-          prediction = await response.json()
-
-          if (response.status !== 200) {
-            setError(prediction.error)
+            console.error("Free trial expired:", errorData);
+            proModal.onOpen();
+            setIsSubmitting(false);
             return;
+          } else {
+            const error = new Error(`HTTP error! status: ${response.status}`);
+            setIsSubmitting(false);
+            throw error;
           }
-          console.log({prediction})
-          setPrediction(prediction)
-          setImages(prediction.output);
-          predictionStatus = prediction.status;
         }
+    
+        const initialPrediction = await response.json();
+        setPrediction(initialPrediction);
+        
+        //let attempts = 0;
+        //const maxAttempts = 30;
+    
+        while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
+          await sleep(1000); // Make sure you have a function that returns a promise that resolves after a timeout
+          const updateResponse = await fetch(`/api/depthmap/${initialPrediction.id}`, { cache: 'no-store' });
+          if (!updateResponse.ok) {
+            const updatedPredictionError = await updateResponse.json();
+            setError(updatedPredictionError.detail);
+            break;
+          }
+    
+          const updatedPrediction = await updateResponse.json();
+    
+          console.log('Status:', updatedPrediction.status);
+          setPrediction(updatedPrediction);
+    
+          if (updatedPrediction.status === "succeeded") {
+            setImages(updatedPrediction.output);
+            break;
+          } else if (updatedPrediction.status === "failed") {
+            // Handle the failure case as needed
+            console.error("Prediction failed:", updatedPrediction);
+            break;
+          }
+    
+          //attempts++;
+        }
+    
+      } catch (error: any) {
+        console.error("An error occurred:", error);
+        // Handle or log the error as needed
+      } finally {
+        setIsSubmitting(false);
+      }
       /*
         try {
           // Clear previous images
