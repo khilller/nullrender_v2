@@ -143,7 +143,7 @@ const Sketch2img = () => {
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(3000);
+          await sleep(500);
           const timestamp = Date.now();
           const updateResponse = await fetch(`/api/sketch/${predictionId}?t=${timestamp}`);
           const updatedPrediction = await updateResponse.json();
