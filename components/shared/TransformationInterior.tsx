@@ -144,6 +144,21 @@ const TransformationInterior = () => {
         console.log({ predictionId });
         //let attempts = 0;
         //const maxAttempts = 30;
+
+        const timer = setInterval(async () => {
+          const response = await fetch ("/api/depthmap/" + predictionId)
+          initialPrediction = await response.json()
+
+          if (response.status !== 200) {
+            setError(initialPrediction.detail)
+            return
+          }
+
+          setPrediction(initialPrediction)
+
+        })
+
+        /*
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
           await sleep(500);
@@ -167,6 +182,7 @@ const TransformationInterior = () => {
           } 
         }
         setIsSubmitting(false);
+        */
     }
 
   return (
