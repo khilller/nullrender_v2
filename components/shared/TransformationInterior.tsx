@@ -147,7 +147,7 @@ const TransformationInterior = () => {
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
           await sleep(3000);
-          const updateResponse = await fetch(`/api/depthmap/${predictionId}`, { cache: 'no-store' });
+          const updateResponse = await fetch(`/api/depthmap/${predictionId}`);
           const updatedPrediction = await updateResponse.json();
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();

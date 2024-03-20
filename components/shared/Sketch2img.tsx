@@ -144,7 +144,8 @@ const Sketch2img = () => {
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
           await sleep(3000);
-          const updateResponse = await fetch(`/api/sketch/${predictionId}`, { cache: 'no-store' });
+          const timestamp = Date.now();
+          const updateResponse = await fetch(`/api/sketch/${predictionId}?t=${timestamp}`);
           const updatedPrediction = await updateResponse.json();
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();

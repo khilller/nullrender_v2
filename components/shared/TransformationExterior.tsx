@@ -136,7 +136,7 @@ const TransformationExterior = () => {
         //const maxAttempts = 30;
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
           await sleep(3000);
-          const updateResponse = await fetch(`/api/hough/${predictionId}`, { cache: 'no-store' });
+          const updateResponse = await fetch(`/api/hough/${predictionId}`);
           const updatedPrediction = await updateResponse.json();
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
