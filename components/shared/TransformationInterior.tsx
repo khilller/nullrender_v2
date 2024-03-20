@@ -111,13 +111,14 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-
       setIsSubmitting(true);
-      try {
         setImages([])
     
         const response = await fetch("/api/depthmap", {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(values)
         });
     
@@ -138,46 +139,33 @@ const TransformationInterior = () => {
         let initialPrediction = await response.json();
         setPrediction(initialPrediction);
 
+
         let predictionId = initialPrediction.id;
-        
+        console.log({ predictionId });
         //let attempts = 0;
         //const maxAttempts = 30;
     
         while (initialPrediction.status !== "succeeded" && initialPrediction.status !== "failed") {
-          await sleep(3000); // Make sure you have a function that returns a promise that resolves after a timeout
+          await sleep(3000);
           const updateResponse = await fetch(`/api/depthmap/${predictionId}`, { cache: 'no-store' });
+          const updatedPrediction = await updateResponse.json();
           if (!updateResponse.ok) {
             const updatedPredictionError = await updateResponse.json();
             setError(updatedPredictionError.detail);
             break;
           }
-    
-          const updatedPrediction = await updateResponse.json();
-    
-          console.log(updatedPrediction.status);
+          
+          console.log({ updatedPrediction });
           setPrediction(updatedPrediction);
-
-          // Update the prediction object used in the while loop condition
+          
+          // Update the initialPrediction object used in the while loop condition
           initialPrediction = updatedPrediction;
-    
-          if (updatedPrediction.status === "succeeded") {
-            setImages(updatedPrediction.output);
-            break;
-          } else if (updatedPrediction.status === "failed") {
-            // Handle the failure case as needed
-            console.error("Prediction failed:", updatedPrediction);
-            break;
-          }
-    
-          //attempts++;
+          
+          if (initialPrediction.status === "succeeded") {
+            setImages(initialPrediction.output);
+          } 
         }
-    
-      } catch (error: any) {
-        console.error("An error occurred:", error);
-        // Handle or log the error as needed
-      } finally {
         setIsSubmitting(false);
-      }
     }
 
   return (
