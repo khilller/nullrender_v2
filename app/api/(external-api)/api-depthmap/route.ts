@@ -1,4 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+// this route is to call the external webhoon to trigger the deployment of the output from replicate
+
 import { NextRequest, NextResponse } from "next/server";
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
