@@ -1,34 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
+export const POST = async (req: NextRequest, res: NextResponse) => {
     try {
-      // Forward the POST request to the external API
-      const externalApiResponse = await fetch('https://cloud.trigger.dev/api/v1/endpoints/', {
-        method: req.method,
-        headers: {
-          'Content-Type': 'application/json',
-          // Include any other necessary headers
-        },
-        body: JSON.stringify(req.body),
-      });
+        const response = await fetch('https://cloud.trigger.dev/api/v1/endpoints/clu0auvl1z9siob2jardnpqof/nullrender-gqhd/index/7e8fl8cvc1')
 
-      if (!externalApiResponse.ok) {
-        throw new Error(`External API error with status: ${externalApiResponse.status}`);
-      }
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
-      // Fetch the JSON result from the external API response
-      const result = await externalApiResponse.json();
-
-      // Send back the result as JSON
-      res.status(200).json(result);
+        return NextResponse.json({ status: 200 });
     } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: error });
+        return NextResponse.json({ status: 500 });
+        
     }
-  } else {
-    // If not a POST request, return 405 Method Not Allowed
-    res.setHeader('Allow', 'POST');
-    res.status(405).end('Method Not Allowed');
-  }
 }
