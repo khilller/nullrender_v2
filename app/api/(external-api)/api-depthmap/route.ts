@@ -1,6 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextRequest) {
   try {
     // Forward the POST request to the external API
     const externalApiResponse = await fetch('https://cloud.trigger.dev/api/v1/endpoints/clu0auvl1z9siob2jardnpqof/nullrender-gqhd/index/7e8fl8cvc1', {
@@ -15,10 +15,10 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
 
     // Retrieve and forward the response from the external API
     const data = await externalApiResponse.json();
-    res.status(200).json(data);
+    return NextResponse.json(data);
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    return NextResponse.error();
   }
 }
