@@ -11,8 +11,6 @@ export async function POST(res:NextResponse) {
         },
       });
   
-      if (!externalApiResponse.ok) throw new Error(`External API error with status: ${externalApiResponse.status}`);
-  
       // Retrieve and forward the response from the external API
       if (!externalApiResponse.ok) throw new Error(`External API error with status: ${externalApiResponse.status}`);
 
