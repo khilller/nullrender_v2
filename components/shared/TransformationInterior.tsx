@@ -125,6 +125,7 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+      setIsProcessing(false);
       try {
         const response = await fetch ('/api/trigger-depthmap', {
           method: 'POST',
@@ -133,6 +134,8 @@ const TransformationInterior = () => {
           },
           body: JSON.stringify(values)
         })
+
+       
 
         if (!response.ok) throw new Error('Network response was not ok')
 
@@ -214,7 +217,7 @@ const TransformationInterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isThinking}
+                            disabled={isProcessing}
                             />
                     </FormControl>
                     </FormItem>
@@ -226,7 +229,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isThinking}
+                                disabled={isProcessing}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -270,7 +273,7 @@ const TransformationInterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isThinking}
+                    disabled={isProcessing}
                     >
                         Generate
                 </Button>
