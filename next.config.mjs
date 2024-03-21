@@ -9,7 +9,8 @@ const nextConfig = {
             }
         ],
         domains: ['api.replicate.delivery', 'api.replicate.com']
-    }
+    },
+    transpilePackages: ['@trigger.dev/react']
 };
 
 export default nextConfig;

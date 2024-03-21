@@ -38,6 +38,10 @@ import { Download } from 'lucide-react'
 import Loader from './Loader'
 import { useProModal } from '@/hooks/use-pro-modal'
 import { useRouter } from 'next/navigation'
+
+import { useEventDetails, useEventRunDetails, useRunDetails } from '@trigger.dev/react'
+import { EventDetails } from '../trigger/EventDetails'
+import { RunId } from '../trigger/RunId'
   
 
 const formSchema = z.object({
@@ -69,6 +73,8 @@ const formSchema = z.object({
     version: string;
   };
 
+  type RunIdType = string | null;
+
 const TransformationInterior = () => {
 
     const proModal = useProModal()
@@ -76,7 +82,7 @@ const TransformationInterior = () => {
 
     const [images, setImages] = React.useState<string[]>([])
     const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
-    const [error, setError] = React.useState(null)
+    //const [error, setError] = React.useState(null)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
     const [isProcessing, setIsProcessing] = React.useState(false)
     const [taskId, setTaskId] = React.useState<string | null>(null)
@@ -88,13 +94,21 @@ const TransformationInterior = () => {
     //cloudinary
     const [info, setInfo] = React.useState();
 
+    //trigger
+    const [eventId, setEventId] = React.useState("");
 
+   
+    const { isLoading, isError, data, error } = useEventRunDetails(eventId);
+
+
+   
+    /*
     React.useEffect(() => {
         if (images && images.length > 0) {
           router.refresh();
-          
         }
       }, [images]);
+      */
     
 
       // 1. Define your form.
@@ -107,10 +121,30 @@ const TransformationInterior = () => {
         },
     })
 
-    const isLoading = form.formState.isSubmitting;
+    const isThinking = form.formState.isSubmitting;
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+      try {
+        const response = await fetch ('/api/trigger-depthmap', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(values)
+        })
+
+        if (!response.ok) throw new Error('Network response was not ok')
+
+        const {eventId} = await response.json();
+        console.log(eventId);
+        setEventId(eventId);
+
+      } catch (error) {
+        console.error('Failed to trigger job:', error);
+      }
+
+      /*
       setIsSubmitting(true);
         setImages([])
     
@@ -162,6 +196,7 @@ const TransformationInterior = () => {
           }
 
         }, 1000)
+        */
     }
 
   return (
@@ -179,7 +214,7 @@ const TransformationInterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isLoading}
+                            disabled={isThinking}
                             />
                     </FormControl>
                     </FormItem>
@@ -191,7 +226,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isLoading}
+                                disabled={isThinking}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -235,33 +270,36 @@ const TransformationInterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isLoading}
+                    disabled={isThinking}
                     >
                         Generate
                 </Button>
             </form>
             </Form>
         </div>
+        <RunId runId={data?.id as string} />
+        
+
+          {/* 
         <div>
-          <p>status: {prediction?.status}</p>
+          <p>status: {JSON.stringify(data?.output)}</p>
         </div>
         <div className='space-y-4 mt-4'>
-            {prediction && prediction.status !== 'succeeded' && (
+            {isLoading && (
                 <div className='p-8 rounded-lg w-full flex items-center justify-center'>
                     <Loader />
                 </div>
 
             )}
 
-             
-            {prediction && prediction.status === 'succeeded' &&(
-                <div className='space-y-4 mt-10 border rounded-lg p-4'>
+            {data &&(
+              <div className='space-y-4 mt-10 border rounded-lg p-4'>
                 <div>
                     <h2 className='text-3xl font-bold text-center'>Generated Images</h2>
                 </div>
                 <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-2 gap-4 mt-8'>
                     {images.slice(1).map((image, index) => (
-                        <Card key={index} className='rounded-lg overflow-hidden'>
+                      <Card key={index} className='rounded-lg overflow-hidden'>
                             <div className='relative aspect-square'>
                                 <Image
                                     alt="Generated Image"
@@ -282,6 +320,7 @@ const TransformationInterior = () => {
             </div>
             )}
         </div>
+                                */}
     </div>
   )
 }
