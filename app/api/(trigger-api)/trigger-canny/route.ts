@@ -1,6 +1,5 @@
 import { client } from "@/trigger";
 import { auth } from "@clerk/nextjs";
-import { createAppRoute } from "@trigger.dev/nextjs";
 
 import "@/jobs"; // Ensure this imports your job definitions correctly
 import { checkApiLimit, incrementApiLimit } from "@/lib/api-limit";
@@ -21,17 +20,17 @@ export  async function POST(req:any) {
         if(!prompt || !amount || !secure_url){
             return new Response("Missing required fields", { status: 400 });
         }
+        console.log("Checking free trial");
         const freeTrial = await checkApiLimit();
 
         if(!freeTrial){
             return new Response(JSON.stringify("Free trial has expired"), { status: 403 });
         }
         
-        
 
         const events = await client.sendEvents([
             {
-                name: "depthmap",
+                name: "canny",
                 payload: {
                     prompt,
                     amount,
@@ -42,9 +41,10 @@ export  async function POST(req:any) {
 
         await incrementApiLimit();
 
-
         const eventId = events[0].id;
         //console.log(eventId);
+        //console.log("After eventId");
+
 
         return new Response(JSON.stringify({ eventId }), { status: 201 });
     } catch (error){

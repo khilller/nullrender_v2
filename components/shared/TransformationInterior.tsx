@@ -39,6 +39,7 @@ import { useRouter } from 'next/navigation'
 
 import { useEventDetails, useEventRunDetails, useRunDetails } from '@trigger.dev/react'
 import { RunId } from '../trigger/RunId'
+import { checkApiLimit } from '@/lib/api-limit'
   
 
 const formSchema = z.object({
@@ -106,6 +107,7 @@ const TransformationInterior = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       setIsProcessing(false);
       try {
+
         const response = await fetch ('/api/trigger-depthmap', {
           method: 'POST',
           headers: {
@@ -114,9 +116,17 @@ const TransformationInterior = () => {
           body: JSON.stringify(values)
         })
 
-       
-
-        if (!response.ok) throw new Error('Network response was not ok')
+        if (!response.ok){
+          const errorData = await response.json();
+          if (response.status === 403) {
+            console.error("Free trial has expired: ", errorData)
+            proModal.onOpen();
+            setIsSubmitting(false);
+          } else {
+            console.error("Failed to trigger job: ", errorData)
+            setIsSubmitting(false);
+          }
+        }
 
         const {eventId} = await response.json();
         console.log(eventId);

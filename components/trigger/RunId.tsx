@@ -78,7 +78,7 @@ export function RunId({ runId, setInfo }: RunIdType) {
           <Loader />
         </div>
         )}
-        <p>{data?.status}</p>
+    
         {data?.output && (
           <div className="space-y-4 mt-10 border rounded-lg p-4">
             <div>

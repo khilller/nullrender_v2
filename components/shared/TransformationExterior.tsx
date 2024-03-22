@@ -37,6 +37,8 @@ import { Download, LoaderCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Loader from './Loader'
 import { useProModal } from '@/hooks/use-pro-modal'
+import { useEventRunDetails } from '@trigger.dev/react'
+import { RunId } from '../trigger/RunId'
   
 
 const formSchema = z.object({
@@ -51,31 +53,12 @@ const formSchema = z.object({
     path: string
   }
 
-  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
-
-  type PredictionType = {
-    completed_at: string;
-    created_at: string;
-    error: string | null;
-    id: string;
-    input: any; // replace 'any' with the actual type if you know it
-    logs: string;
-    metrics: { predict_time: number };
-    model: string;
-    output: string[];
-    started_at: string;
-    status: string;
-    urls: { cancel: string; get: string };
-    version: string;
-  };
 
 const TransformationExterior = () => {
 
     const proModal = useProModal()
 
     const [images, setImages] = React.useState<string[]>([])
-    const [prediction, setPrediction] = React.useState<PredictionType | null>(null)
-    const [error, setError] = React.useState(null)
     const [isSubmitting, setIsSubmitting] = React.useState(false)
 
     const { toast } = useToast()
@@ -84,6 +67,10 @@ const TransformationExterior = () => {
 
     //cloudinary
     const [info, setInfo] = React.useState();
+    const [eventId, setEventId] = React.useState("");
+
+   
+    const { isLoading, isError, data, error } = useEventRunDetails(eventId);
 
     React.useEffect(() => {
         if (images && images.length > 0) {
@@ -102,56 +89,41 @@ const TransformationExterior = () => {
         },
     })
 
-    const isLoading = form.formState.isSubmitting;
+    const isThinking = form.formState.isSubmitting;
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       setIsSubmitting(true);
-        setImages([])
-    
-        const response = await fetch("/api/hough", {
-          method: "POST",
+      try {
+        const response = await fetch ('/api/trigger-canny', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(values)
-        });
-    
-        if (!response.ok) {
+        })
+
+        if (!response.ok){
           const errorData = await response.json();
           if (response.status === 403) {
-            console.error("Free trial expired:", errorData);
+            console.error("Free trial has expired: ", errorData)
             proModal.onOpen();
             setIsSubmitting(false);
-            return;
           } else {
-            const error = new Error(`HTTP error! status: ${response.status}`);
+            console.error("Failed to trigger job: ", errorData)
             setIsSubmitting(false);
-            throw error;
           }
         }
-    
-        let initialPrediction = await response.json();
-        setPrediction(initialPrediction);
         
-        let predictionId = initialPrediction.id;
-        //let attempts = 0;
-        //const maxAttempts = 30;
+        const {eventId} = await response.json();
+        console.log(eventId);
+        setEventId(eventId);
+        setIsSubmitting(false);
 
-        const timer = setInterval(async () => {
-          const response = await fetch ("/api/hough/" + predictionId)
-          initialPrediction = await response.json()
-
-          if (response.status !== 200) {
-            setError(initialPrediction.detail)
-            return
-          }
-
-          setPrediction(initialPrediction)
-          console.log(initialPrediction)
-          if (initialPrediction.status === "succeeded") {
-            setImages(initialPrediction.output)
-            return;
-          }
-
-        }, 1000)
+      } catch (error) {
+        console.error('Failed to trigger job:', error);
+      }
+      
 
     }
 
@@ -170,7 +142,7 @@ const TransformationExterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isLoading}
+                            disabled={isSubmitting}
                             />
                     </FormControl>
                     </FormItem>
@@ -182,7 +154,7 @@ const TransformationExterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isLoading}
+                                disabled={isSubmitting}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -226,53 +198,14 @@ const TransformationExterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isLoading}
+                    disabled={isSubmitting}
                     >
                         Generate
                 </Button>
             </form>
             </Form>
         </div>
-        <div>
-          <p>status: {prediction?.status}</p>
-        </div>
-        <div className='space-y-4 mt-4'>
-            {prediction && prediction.status!== "succeeded" && (
-                <div className='p-8 rounded-lg w-full flex items-center justify-center'>
-                    <Loader />
-                </div>
-
-            )}
-
-            {prediction && prediction.status === "succeeded" && (
-                <div className='space-y-4 mt-10 border rounded-lg p-4'>
-                    <div>
-                        <h2 className='text-3xl font-bold text-center'>Generated Images</h2>
-                    </div>
-                    <div className='grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-2 gap-4 mt-8'>
-                        {images.slice(1).map((image, index) => (
-                            <Card key={index} className='rounded-lg overflow-hidden'>
-                                <div className='relative aspect-square'>
-                                    <Image
-                                        alt="Generated Image"
-                                        src={image}
-                                        layout='fill'
-                                        objectFit='cover'
-                                        />
-                                </div>
-                                <CardFooter>
-                                    <Button variant="secondary" className='w-full mt-4' onClick={() => {window.open(image)}}>
-                                        <Download className='h-4 w-4 mr-2' />
-                                        Download
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        
-                        ))}
-                    </div>
-                </div>
-            )}
-        </div>
+        <RunId runId={data?.id as string} setInfo={setImages} />
     </div>
   )
 }

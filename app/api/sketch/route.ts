@@ -26,6 +26,7 @@ export async function POST(req: Request) {
         }
 
         const freeTrial = await checkApiLimit();
+        console.log(freeTrial);
 
         if(!freeTrial){
             return new NextResponse(JSON.stringify("Free trial has expired"), { status: 403 });

@@ -13,17 +13,17 @@ const replicate = new Replicate({
 // define the job
 
 client.defineJob({
-  id: 'sketchImg',
-  name: "sketch",
+  id: 'canny-style',
+  name: "canny",
   version: "1.0.0",
   integrations: {replicate},
   trigger: eventTrigger({
-    name: "sketch", //this is connected to the name in the trigger-depthmap/route.ts
+    name: "canny", //this is connected to the name in the trigger-depthmap/route.ts
     schema: z.object({
       prompt: z.string(),
       amount: z.string(),
       secure_url: z.string(),
-      version: z.string().default("435061a1b5a4c1e26740464bf786efdfa9cb3a3ac488595a2de23e143fdb0117")
+      version: z.string().default("aff48af9c68d162388d230a2ab003f68d2638d88307bdaf1c2f1ac95079c9613")
     })
   }),
 
@@ -41,6 +41,8 @@ client.defineJob({
         n_prompt: "longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality",
         ddim_steps: 25,
         num_samples: amount,
+        low_threshold: 100,
+        high_threshold: 200,
         image_resolution: "512"
       }
     })
