@@ -82,13 +82,12 @@ const TransformationInterior = () => {
 
 
    
-    /*
     React.useEffect(() => {
         if (images && images.length > 0) {
           router.refresh();
         }
       }, [images]);
-      */
+
     
 
       // 1. Define your form.
@@ -206,7 +205,7 @@ const TransformationInterior = () => {
             </form>
             </Form>
         </div>
-        <RunId runId={data?.id as string} />
+        <RunId runId={data?.id as string} setInfo={setImages} />
     </div>
   )
 }

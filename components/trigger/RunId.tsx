@@ -6,14 +6,20 @@ import Image from "next/image";
 import { Card, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import Loader from "../shared/Loader";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
+type RunIdType = {
+  runId: string;
+  setInfo: React.Dispatch<any>;
+}
 
 
-export function RunId({ runId }: { runId: string }) {
+
+export function RunId({ runId, setInfo }: RunIdType) {
   const { isLoading, isError, data, error } = useRunDetails(runId);
+  const [image, setImage] = useState();
   
 
   useEffect(() => {
@@ -35,6 +41,7 @@ export function RunId({ runId }: { runId: string }) {
   
         // If the fetch is successful, we assume an endpoint 
         // or another useEffect will eventually update the `data` state
+        setInfo(data?.completedAt)
   
       } catch (error) {
         console.error("Fetch error:", error);
