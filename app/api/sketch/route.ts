@@ -1,3 +1,7 @@
+// to be depreicated
+
+/*
+
 import { auth } from "@clerk/nextjs";
 import { NextResponse } from "next/server";
 import Replicate from "replicate";
@@ -65,3 +69,5 @@ export async function POST(req: Request) {
     }
 
 }
+
+*/
