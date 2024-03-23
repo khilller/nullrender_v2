@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ModalProvider from "@/components/state/ModalProvider";
 import { TriggerProvider } from "@trigger.dev/react";
+import { CrispProvider } from "@/components/landing/CrispProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <TriggerProvider publicApiKey={process.env.NEXT_PUBLIC_TRIGGER_PUBLIC_API_KEY!}>
+          <CrispProvider />
         <body className={`${inter.className} main`}>
           <ModalProvider />
           <main className="">
