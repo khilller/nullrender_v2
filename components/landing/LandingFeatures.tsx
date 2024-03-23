@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import {
     Card,
@@ -10,9 +12,12 @@ import {
 import Image from 'next/image'
 import { featureOptions } from '@/constants'
 import { Button } from '../ui/button'
+import Link from 'next/link'
+import { useAuth } from '@clerk/nextjs'
   
 
 const LandingFeatures = () => {
+    const { isSignedIn } = useAuth()
   return (
     <section className='px-10 pb-20' id="features">
         <div className='py-4 md:space-y-4 w-full'>
@@ -37,9 +42,11 @@ const LandingFeatures = () => {
                         <CardDescription className='mt-2'>{feature.description}</CardDescription>
                     </CardContent>
                     <CardFooter>
-                        <Button variant="secondary" className='shadow-md'>
-                            Try for free
-                        </Button>
+                        <Link href={isSignedIn ? '/dashboard' : '/sign-up'} >
+                            <Button variant="secondary" className='shadow-md'>
+                                Try for free
+                            </Button>
+                        </Link>
                     </CardFooter>
                 </Card>
             ))}

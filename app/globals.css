@@ -175,7 +175,8 @@ body, html {
   }
 
   @media (max-width: 600px) {
-    .container {
-      justify-content: flex-start; /* adjust as needed */
+    .spline {
+      width: 30%;
+      height: 30%;
     }
   }

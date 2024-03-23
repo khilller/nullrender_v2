@@ -21,12 +21,20 @@ const LandingNav = () => {
                     alt='logo'
                     width={180}
                     height={180}
+                    className='hidden md:block'
+                />
+                <Image 
+                    src='/assets/images/logo.svg'
+                    alt='logo'
+                    width={140}
+                    height={140}
+                    className=' md:hidden'
                 />
             </div>
         </Link>
         <div className='flex items-center gap-x-2'>
             <Link href={isSignedIn ? '/dashboard' : '/sign-up'}>
-                <Button className='rounded-full' variant='outline'> 
+                <Button className='rounded-full ' variant='outline'> 
                     {isSignedIn ? 'Dashboard' : 'Get Started'}
                 </Button>
             </Link>
