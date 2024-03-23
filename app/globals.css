@@ -71,6 +71,13 @@ body,
     --ring: 212.7 26.8% 83.9%;
   }
 }
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+
  
 @layer base {
   * {
@@ -80,6 +87,8 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+
 
 .header {
   @apply flex-between w-full border-b-4 border-purple-100 bg-white p-5 md:hidden
@@ -133,6 +142,12 @@ body,
   @apply rounded-[16px] bg-white  p-5 shadow-sm shadow-purple-200/50;
 }
 
+/* text input */
+.home_page_text {
+  @apply md:text-5xl text-4xl font-bold mb-10 text-center text-slate-300
+}
+
+
 
 
 /* =====  CLERK OVERRIDES */
@@ -147,3 +162,20 @@ body,
   font-weight: 600;
   color: #ffffff;
 }
+
+
+/* === ALIGNMENTS*/
+.spline {
+    display: flex;
+    justify-content: center; /* align horizontal */
+    align-items: center; /* align vertical */
+    width: 50%;
+    height: 50%;
+    
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      justify-content: flex-start; /* adjust as needed */
+    }
+  }

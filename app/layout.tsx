@@ -21,9 +21,11 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <TriggerProvider publicApiKey={process.env.NEXT_PUBLIC_TRIGGER_PUBLIC_API_KEY!}>
-        <body className={inter.className}>
+        <body className={`${inter.className} main`}>
           <ModalProvider />
-          {children}
+          <main className="">
+            {children}
+          </main>
         </body>
         </TriggerProvider>
       </html>

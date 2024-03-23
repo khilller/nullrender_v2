@@ -1,17 +1,24 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
+import LandingNav from '@/components/landing/LandingNav'
+import LandingHero from '@/components/landing/LandingHero'
+import LandingContent from '@/components/landing/LandingContent'
+import LandingFeatures from '@/components/landing/LandingFeatures'
+import FAQ from '@/components/landing/FAQ'
+import ContactUs from '@/components/landing/ContactUs'
+import Footer from '@/components/landing/Footer'
 
 const LandingPage = () => {
   return (
-    <div>
-      <h2 className="text-6xl text-green-500">Welcome to your nullrender!</h2>
-      <Link href='/sign-in'>
-        <Button variant="outline">Login</Button>
-      </Link>
-      <Link href='/sign-up'>
-        <Button variant="outline">Register</Button>
-      </Link>
+    <div className='h-full'>
+      <LandingNav />
+      <LandingHero />
+      <LandingFeatures />
+      <FAQ />
+      <ContactUs />
+      <Footer />
+
     </div>
   )
 }
