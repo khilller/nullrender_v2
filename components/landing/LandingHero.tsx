@@ -11,8 +11,11 @@ const LandingHero = () => {
     const { isSignedIn } = useAuth()
   return (
     <section className='font-bold flex flex-col justify-center items-center text-center relative h-[550px] mb-24'>
-        <div className='z-1 mr-5 absolute flex justify-center items-center w-full'>
+        <div className='hidden md:block z-1 mr-5 absolute justify-center items-center w-full'>
             <Spline scene="https://prod.spline.design/p4fEV0E9kV9tgWb5/scene.splinecode" className='spline' />
+        </div>
+        <div className='md:hidden z-1 mr-5 absolute justify-center items-center w-full'>
+            <Spline scene="https://prod.spline.design/ZbmatLTqSmyipk0w/scene.splinecode" className='spline' />
         </div>
         <div className='text-5xl md:text-6l lg:text-7xl z-20 relative flex flex-col text-slate-100 mb-6'>
             <h1>Transform Design<span className='text-[#E04FD9] '>.</span></h1>
