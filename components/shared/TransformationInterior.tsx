@@ -107,7 +107,6 @@ const TransformationInterior = () => {
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       setIsProcessing(false);
-      setUrl(values.secure_url);
       try {
 
         const response = await fetch ('/api/trigger-depthmap', {
@@ -219,7 +218,6 @@ const TransformationInterior = () => {
         </div>
         <RunId runId={data?.id as string} setInfo={setImages} />
         <div>
-          <p>{url}</p>
         </div>
     </div>
   )
