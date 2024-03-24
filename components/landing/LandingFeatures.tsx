@@ -25,7 +25,7 @@ const LandingFeatures = () => {
                 Features
             </h2>
         </div>
-        <div className=' p-3 md:p-2 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-2 gap-10 md:mt-8'>
+        <div className=' p-3 md:p-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-10 md:mt-8'>
             {featureOptions.map((feature, index) => (
                 <Card key={index} className="rounded-xl overflow-hidden bg-[#192339] shadow-md border-none">
                     <CardHeader className='space-y-0 p-0 mb-6 w-full '>

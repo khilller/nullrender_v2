@@ -17,7 +17,7 @@ const LandingHero = () => {
         <div className='md:hidden z-1 absolute justify-center items-center w-full'>
             <Spline scene="https://prod.spline.design/ZbmatLTqSmyipk0w/scene.splinecode" className='spline' />
         </div>
-        <div className='text-5xl md:text-6l lg:text-7xl z-20 relative flex flex-col text-slate-100 mb-6'>
+        <div className='text-4xl md:text-6l lg:text-7xl z-20 relative flex flex-col text-slate-100 mb-6'>
             <h1>Transform Design<span className='text-[#E04FD9] '>.</span></h1>
             <h1>Elevate Spaces<span className='text-[#E04FD9] '>.</span></h1>
         </div>

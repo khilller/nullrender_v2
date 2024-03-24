@@ -12,6 +12,9 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "nullrender",
   description: "The next generation AI architecture renderer",
+  openGraph: {
+    images: '/assets/images/social.png'
+  }
 };
 
 export default function RootLayout({
