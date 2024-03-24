@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import ModalProvider from "@/components/state/ModalProvider";
 import { TriggerProvider } from "@trigger.dev/react";
 import { CrispProvider } from "@/components/landing/CrispProvider";
+import { Analytics } from '@vercel/analytics/react';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           <ModalProvider />
           <main className="">
             {children}
+            <Analytics />
           </main>
         </body>
         </TriggerProvider>
