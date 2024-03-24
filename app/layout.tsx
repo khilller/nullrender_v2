@@ -10,6 +10,7 @@ import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nullrender.com"),
   title: "nullrender",
   description: "The next generation AI architecture renderer",
   openGraph: {
