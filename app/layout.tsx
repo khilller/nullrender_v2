@@ -14,7 +14,19 @@ export const metadata: Metadata = {
   title: "nullrender",
   description: "The next generation AI architecture renderer",
   openGraph: {
-    images: '/assets/images/social.png'
+    title: "nullrender",
+    description: "The next generation AI architecture renderer",
+    url: "https://nullrender.com",
+    siteName: "nullrender",
+    type: "website",
+    images: [
+      {
+        url: "https://nullrender.com/assets/images/logo.svg",
+        width: 721,
+        height: 416,
+        alt: "nullrender social image",
+      }
+    ]
   }
 };
 
