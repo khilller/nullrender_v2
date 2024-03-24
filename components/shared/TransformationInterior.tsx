@@ -85,9 +85,8 @@ const TransformationInterior = () => {
 
    
     React.useEffect(() => {
-        if (images && images.length > 0) {
-          router.refresh();
-        }
+        setIsSubmitting(false);
+        router.refresh()
       }, [images]);
 
     
@@ -106,7 +105,7 @@ const TransformationInterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-      setIsProcessing(false);
+      setIsSubmitting(true);
       try {
 
         const response = await fetch ('/api/trigger-depthmap', {
@@ -124,7 +123,7 @@ const TransformationInterior = () => {
             proModal.onOpen();
             setIsSubmitting(false);
           } else {
-            console.error("Failed to trigger job: ", errorData)
+            console.error("Failed to trigger job: ", errorData);
             setIsSubmitting(false);
           }
         }
@@ -153,7 +152,7 @@ const TransformationInterior = () => {
                             placeholder="a cheerful modernist bedroom" 
                             {...field}
                             className='border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent'
-                            disabled={isProcessing}
+                            disabled={isSubmitting}
                             />
                     </FormControl>
                     </FormItem>
@@ -165,7 +164,7 @@ const TransformationInterior = () => {
                     render={({ field }) => (
                         <FormItem className='col-span-12 lg:col-span-2 w-full'>
                             <Select
-                                disabled={isProcessing}
+                                disabled={isSubmitting}
                                 onValueChange={field.onChange}
                                 value={field.value}
                                 defaultValue={field.value}
@@ -209,7 +208,7 @@ const TransformationInterior = () => {
               
                 <Button 
                     className='col-span-12 lg:col-span-2 w-full'
-                    disabled={isProcessing}
+                    disabled={isSubmitting}
                     >
                         Generate
                 </Button>

@@ -94,11 +94,10 @@ const Sketch2img = () => {
 
 
     React.useEffect(() => {
-        if (images && images.length > 0) {
-          router.refresh();
-          
-        }
-      }, [images]);
+      setIsSubmitting(false);
+      router.refresh()
+    }, [images]);
+
     
 
       // 1. Define your form.
@@ -140,7 +139,6 @@ const Sketch2img = () => {
         const {eventId} = await response.json();
         console.log(eventId);
         setEventId(eventId);
-        setIsSubmitting(false);
 
       } catch (error) {
         console.error('Failed to trigger job:', error);

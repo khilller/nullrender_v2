@@ -7,6 +7,7 @@ import { Card, CardFooter } from "../ui/card";
 import { Button } from "../ui/button";
 import Loader from "../shared/Loader";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
@@ -20,6 +21,7 @@ type RunIdType = {
 export function RunId({ runId, setInfo }: RunIdType) {
   const { isLoading, isError, data, error } = useRunDetails(runId);
   const [image, setImage] = useState();
+  const router = useRouter()
   
 
   useEffect(() => {
@@ -37,11 +39,13 @@ export function RunId({ runId, setInfo }: RunIdType) {
   
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
+        } else {
+          const data = await response.json();
+          console.log(data.status);
         }
   
         // If the fetch is successful, we assume an endpoint 
         // or another useEffect will eventually update the `data` state
-        setInfo(data?.completedAt)
   
       } catch (error) {
         console.error("Fetch error:", error);
@@ -53,6 +57,9 @@ export function RunId({ runId, setInfo }: RunIdType) {
       fetchData();  // Also call it immediately
       intervalId = setInterval(fetchData, 1000);
     } 
+    if (data?.status === "SUCCESS") {
+      setInfo(data.completedAt?.toISOString());
+    }
   
     // Return the cleanup function
     return () => {
@@ -60,11 +67,14 @@ export function RunId({ runId, setInfo }: RunIdType) {
         clearInterval(intervalId);
       }
     };
+
   
   // Include `data.status` in the dependencies array to re-run 
   // the effect when the status changes
   }, [data?.status]);
 
+
+ 
 
   if (isError) {
     return <div>Error: {error.message}</div>;

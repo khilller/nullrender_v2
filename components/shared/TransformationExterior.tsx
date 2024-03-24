@@ -73,10 +73,10 @@ const TransformationExterior = () => {
     const { isLoading, isError, data, error } = useEventRunDetails(eventId);
 
     React.useEffect(() => {
-        if (images && images.length > 0) {
-          router.refresh();
-        }
-      }, [images]);
+      setIsSubmitting(false);
+      router.refresh()
+    }, [images]);
+
     
 
       // 1. Define your form.
@@ -118,7 +118,6 @@ const TransformationExterior = () => {
         const {eventId} = await response.json();
         console.log(eventId);
         setEventId(eventId);
-        setIsSubmitting(false);
 
       } catch (error) {
         console.error('Failed to trigger job:', error);
