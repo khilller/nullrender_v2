@@ -10,7 +10,7 @@ const page = async () => {
     //const user = await getUserById(userId)
 
   return (
-    <section className=''>
+    <section className='mb-52'>
     
     <Header
         title='Exterior Render'
