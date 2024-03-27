@@ -95,7 +95,7 @@ const TransformationExterior = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
       setIsSubmitting(true);
       try {
-        const response = await fetch ('/api/trigger-canny', {
+        const response = await fetch ('/api/trigger-hough', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

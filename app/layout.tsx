@@ -27,6 +27,9 @@ export const metadata: Metadata = {
         alt: "nullrender social image",
       }
     ]
+  },
+  icons: {
+    icon: 'app/favicon.ico',
   }
 };
 

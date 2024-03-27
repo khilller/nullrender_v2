@@ -3,3 +3,4 @@
 export * from "./interior";
 export * from "./sketch";
 export * from "./canny"
+export * from "./hough"
