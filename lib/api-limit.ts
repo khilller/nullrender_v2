@@ -1,3 +1,6 @@
+///this has been deprecated as mongodb is the new database!!!
+
+
 import { auth} from '@clerk/nextjs';
 
 import prismadb from './prismadb';

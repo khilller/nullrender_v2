@@ -93,7 +93,7 @@ const TransformationExterior = () => {
  
   // 2. Define a submit handler.
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-      setIsSubmitting(true);
+      //setIsSubmitting(true);
       try {
         const response = await fetch ('/api/trigger-hough', {
           method: 'POST',
@@ -103,19 +103,20 @@ const TransformationExterior = () => {
           body: JSON.stringify(values)
         })
 
+        const responseData = await response.json();
+
         if (!response.ok){
-          const errorData = await response.json();
           if (response.status === 403) {
-            console.error("Free trial has expired: ", errorData)
+            console.error("Free trial has expired: ", responseData)
             proModal.onOpen();
             setIsSubmitting(false);
           } else {
-            console.error("Failed to trigger job: ", errorData)
+            console.error("Failed to trigger job: ", responseData)
             setIsSubmitting(false);
           }
         }
         
-        const {eventId} = await response.json();
+        const {eventId} = responseData;
         console.log(eventId);
         setEventId(eventId);
 

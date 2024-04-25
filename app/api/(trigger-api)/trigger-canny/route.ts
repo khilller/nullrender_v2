@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs";
 
 import "@/jobs"; // Ensure this imports your job definitions correctly
 import { checkApiLimit, incrementApiLimit } from "@/lib/api-limit";
+import { checkFreeCredits } from "@/lib/functions";
 
 
 export  async function POST(req:any) {
@@ -21,7 +22,7 @@ export  async function POST(req:any) {
             return new Response("Missing required fields", { status: 400 });
         }
         console.log("Checking free trial");
-        const freeTrial = await checkApiLimit();
+        const freeTrial = await checkFreeCredits();
 
         if(!freeTrial){
             return new Response(JSON.stringify("Free trial has expired"), { status: 403 });

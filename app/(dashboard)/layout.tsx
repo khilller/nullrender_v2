@@ -1,14 +1,21 @@
+'use client'
+
 import MobileNav from '@/components/shared/MobileNav'
 import Sidebar from '@/components/shared/Sidebar'
 import { getApiLimitCount } from '@/lib/api-limit'
-import React from 'react'
+import { useCreditStore } from '@/hooks/free-credit'
 
-const DashboardLayout = async ({
+import React, { useState, useEffect} from 'react'
+
+const DashboardLayout = ({
     children
 } : {
     children: React.ReactNode
 }) => {
-    const apiLimitCount = await getApiLimitCount()
+
+    const apiLimitCount = useCreditStore(state => state.freeCredit)
+
+    //const apiLimitCount = await getApiLimitCount()
     
   return (
     <section className=''>

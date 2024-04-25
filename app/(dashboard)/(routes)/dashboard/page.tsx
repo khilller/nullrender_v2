@@ -8,9 +8,28 @@ import { navLinks } from "@/constants";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { checkFreeCredits, getProfile } from "@/lib/functions";
+import { useUser, SignedIn } from "@clerk/nextjs";
+import { useCreditStore } from "@/hooks/free-credit";
 
 
 const DashboardPage = () => {
+  const user = useUser();
+  const [apiLimitCount, setApiLimitCount] = useState(0);
+    const [profile, setProfile] = useState(null);
+  
+    React.useEffect(() => {
+      if (user && !profile) {
+        (async function fetchProfile() {
+          const profileData = await getProfile()
+          setProfile(profileData)
+
+          //update the free credit store
+          useCreditStore.setState({ freeCredit: profileData.freeCredit })
+        })()
+      }
+    }, [profile])
 
   const router = useRouter()
 

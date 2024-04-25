@@ -1,12 +1,14 @@
 import { client } from "@/trigger";
 import { auth } from "@clerk/nextjs";
 import { createAppRoute } from "@trigger.dev/nextjs";
+import { connectToDatabase } from "@/lib/mongodb";
 
 import "@/jobs"; // Ensure this imports your job definitions correctly
 import { checkApiLimit, incrementApiLimit } from "@/lib/api-limit";
 
 
 export  async function POST(req:any) {
+    const { db } = await connectToDatabase();
     try {
         const { userId } = auth()
         const body = await req.json()
@@ -21,9 +23,13 @@ export  async function POST(req:any) {
         if(!prompt || !amount || !secure_url){
             return new Response("Missing required fields", { status: 400 });
         }
-        const freeTrial = await checkApiLimit();
+        let freeCredit;
 
-        if(!freeTrial){
+        const data = await db.collection("profiles").findOne({ userId: userId });
+
+        freeCredit = data?.freeCredit;
+
+        if (!freeCredit || freeCredit <= 0) {
             return new Response(JSON.stringify("Free trial has expired"), { status: 403 });
         }
         
@@ -40,7 +46,9 @@ export  async function POST(req:any) {
             }
         ])
 
-        await incrementApiLimit();
+        if (freeCredit > 0) {
+            await db.collection("profiles").updateOne({ userId: userId }, { $inc: { freeCredit: -1 } });
+        }
 
 
         const eventId = events[0].id;
