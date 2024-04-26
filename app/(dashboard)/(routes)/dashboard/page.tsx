@@ -17,19 +17,20 @@ import { useCreditStore } from "@/hooks/free-credit";
 const DashboardPage = () => {
   const user = useUser();
   const [apiLimitCount, setApiLimitCount] = useState(0);
-    const [profile, setProfile] = useState(null);
-  
-    React.useEffect(() => {
-      if (user && !profile) {
-        (async function fetchProfile() {
-          const profileData = await getProfile()
-          setProfile(profileData)
+  const [profile, setProfile] = useState(null);
+  const setFreeCredit = useCreditStore(state => state.setFreeCredit);
 
-          //update the free credit store
-          useCreditStore.setState({ freeCredit: profileData.freeCredit })
-        })()
-      }
-    }, [profile])
+  React.useEffect(() => {
+    if (user && profile === null) {
+      (async function fetchProfile() {
+        const profileData = await getProfile()
+        setProfile(profileData)
+  
+        //update the free credit store
+        useCreditStore.setState({ freeCredit: profileData.freeCredit })
+      })()
+    }
+  }, [user, profile])
 
   const router = useRouter()
 
