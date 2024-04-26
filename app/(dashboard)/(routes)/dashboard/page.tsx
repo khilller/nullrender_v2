@@ -30,7 +30,8 @@ const DashboardPage = () => {
         useCreditStore.setState({ freeCredit: profileData.freeCredit })
       })()
     }
-  }, [user, profile])
+  }, [])
+  
 
   const router = useRouter()
 
