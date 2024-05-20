@@ -206,6 +206,7 @@ const TransformationExterior = () => {
             </Form>
         </div>
         <RunId runId={data?.id as string} setInfo={setImages} />
+        <div className="h-[200px]" />
     </div>
   )
 }

@@ -40,7 +40,7 @@ const Sidebar = ({apiLimitCount=0}: SidebarProps) => {
     const pathname = usePathname()
 
   return (
-    <div className='space-y-4 py-4 flex flex-col h-full bg-[#111837]  text-white'>
+    <div className='space-y-4 py-4 flex flex-col min-h-screen overflow-y-auto bg-[#111837]  text-white'>
         <div className='px-3 py-2'>
             <Link href="/dashboard" className='flex-center pl-3 mb-14'>
                 <div className='relative'>
@@ -52,7 +52,7 @@ const Sidebar = ({apiLimitCount=0}: SidebarProps) => {
                     />
                 </div>
             </Link>
-            <div className='flex flex-col justify-between h-full '>
+            <div className='flex flex-col justify-between flex-grow overflow-y-auto'>
                 
                     <ul className='sidebar-nav_elements'>
                         {navLinks.slice(0, 4).map((link, index) => {

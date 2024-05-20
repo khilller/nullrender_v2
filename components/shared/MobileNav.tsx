@@ -21,6 +21,8 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import Sidebar from './Sidebar'
 import { getApiLimitCount } from '@/lib/api-limit'
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 
 interface SidebarProps {
     apiLimitCount: number
@@ -48,7 +50,7 @@ const MobileNav = ({apiLimitCount=0}: SidebarProps) => {
                 height={180}
             ></Image>
         </Link>
-        <nav className='flex gap-2'>
+        <nav className='flex gap-2 overflow-y-auto'>
             <SignedIn>
                 <UserButton afterSignOutUrl='/' />
                 <Sheet>
@@ -56,7 +58,10 @@ const MobileNav = ({apiLimitCount=0}: SidebarProps) => {
                         <Menu size={24} strokeWidth={2.5} className='cursor-pointer'/>
                     </SheetTrigger>
                     <SheetContent className='p-0 border-none'>
-                        <Sidebar apiLimitCount={apiLimitCount}/>
+
+                            <Sidebar apiLimitCount={apiLimitCount}/>
+                            
+
                     </SheetContent>
                 </Sheet>
 
