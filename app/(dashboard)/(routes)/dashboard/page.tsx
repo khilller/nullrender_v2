@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button"
 import { UserButton } from "@clerk/nextjs";
-import { ArrowRight, Bolt, Building2, HandCoins, Laugh, LayoutDashboard, PencilRuler } from "lucide-react";
+import { ArrowRight, Bolt, Building2, HandCoins, Laugh, LayoutDashboard, PencilRuler, PaintBucket } from "lucide-react";
 import { navLinks } from "@/constants";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -49,6 +49,8 @@ const DashboardPage = () => {
             return <HandCoins className='text-yellow-400'/>
         case 'sketch':
             return <PencilRuler className='text-green-500'/>
+        case 'style':
+            return <PaintBucket className='text-blue-500'/>
         default:
             return null;
     }
@@ -62,7 +64,7 @@ const DashboardPage = () => {
       Render with the power of AI. Get started by uploading your images and let us do the rest.
     </p>
     <div className="px-4 md:px-20 lg:px-32 space-y-4 mt-20"> 
-      {navLinks.slice(0, 3).map((link, index) => (
+      {navLinks.slice(0, 4).map((link, index) => (
         <Card 
           key={index} 
           className="p-4 border-black/5 flex items-center justify-between hover:shadow-md transition cursor-pointer"

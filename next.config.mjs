@@ -8,10 +8,14 @@ const nextConfig = {
                 port: ''
             },
             {
+                protocol: 'https',
                 hostname: 'api.replicate.delivery',
+                port: ''
             },
             {
+                protocol: 'https',
                 hostname: 'api.replicate.com',
+                port: ''
             }
         ],
         //domains: ['api.replicate.delivery', 'api.replicate.com']

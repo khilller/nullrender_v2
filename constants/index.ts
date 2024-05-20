@@ -15,6 +15,12 @@ export const navLinks = [
         icon: 'sketch'
 
     },
+    {
+        label: 'Style Transfer',
+        route: '/style-transfer',
+        icon: 'style'
+    },
+
 
     {
         label: 'Dashboard',
