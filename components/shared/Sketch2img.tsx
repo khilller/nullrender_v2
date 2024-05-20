@@ -137,7 +137,7 @@ const Sketch2img = () => {
         }
 
         const {eventId} = await response.json();
-        console.log(eventId);
+        //console.log(eventId);
         setEventId(eventId);
 
       } catch (error) {

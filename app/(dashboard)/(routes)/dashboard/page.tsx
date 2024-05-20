@@ -27,7 +27,7 @@ const DashboardPage = () => {
         setProfile(profileData)
   
         //update the free credit store
-        useCreditStore.setState({ freeCredit: profileData.freeCredit })
+        useCreditStore.setState({ freeCredit: profileData?.freeCredit })
       })()
     }
   }, [])

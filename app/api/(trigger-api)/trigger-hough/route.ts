@@ -27,7 +27,10 @@ export  async function POST(req:any) {
         }
 
         // check for free credits
+        //this is the latedt implementation
 
+        /*
+        
         let freeCredit;
 
         const data = await db.collection("profiles").findOne({ userId: userId });
@@ -37,6 +40,7 @@ export  async function POST(req:any) {
         if (!freeCredit || freeCredit <= 0) {
             return new Response(JSON.stringify("Free trial has expired"), { status: 403 });
         }
+        */
         
         
         /*
@@ -62,10 +66,11 @@ export  async function POST(req:any) {
         ])
 
         //await incrementApiLimit();
-
+        /*
         if (freeCredit > 0) {
             await db.collection("profiles").updateOne({ userId: userId }, { $inc: { freeCredit: -1 } });
         }
+        */
 
         //console.log(freeCredit);
 

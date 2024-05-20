@@ -24,6 +24,7 @@ export  async function POST(req:any) {
             return new Response("Missing required fields", { status: 400 });
         }
 
+        /*
         let freeCredit;
 
         const data = await db.collection("profiles").findOne({ userId: userId });
@@ -33,6 +34,7 @@ export  async function POST(req:any) {
         if (!freeCredit || freeCredit <= 0) {
             return new Response(JSON.stringify("Free trial has expired"), { status: 403 });
         }
+        */ 
 
 
         const events = await client.sendEvents([
@@ -45,10 +47,11 @@ export  async function POST(req:any) {
                 }
             }
         ])
-
+        /*
         if (freeCredit > 0) {
             await db.collection("profiles").updateOne({ userId: userId }, { $inc: { freeCredit: -1 } });
         }
+        */
 
         const eventId = events[0].id;
         //console.log(eventId);

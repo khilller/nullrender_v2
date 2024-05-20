@@ -117,7 +117,7 @@ const TransformationExterior = () => {
         }
         
         const {eventId} = responseData;
-        console.log(eventId);
+        //console.log(eventId);
         setEventId(eventId);
 
       } catch (error) {
