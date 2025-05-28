@@ -22,7 +22,7 @@ export default function Footer() {
         </Link>
         </div>
         <div className="w-full flex flex-col ml-2 mt-3 text-center md:text-start text-slate-300">
-          <p>&copy; 2024 - All rights reserved.</p>
+          <p>&copy; 2025 - All rights reserved.</p>
         </div>
       </div>
 
@@ -40,8 +40,8 @@ export default function Footer() {
         <Link 
           href=""
           className=" text-sm font-normal mb-2 text-gray-400 cursor-pointer" 
-          onClick={() => window.open('mailto:auggi.labs@gmail.com?subject=Contact%20ArchQuest')}
-          >Email: auggi.labs@gmail.com</ Link>
+          onClick={() => window.open('mailto:aug.spc@outlook.com?subject=Contact%20ArchQuest')}
+          >Email</ Link>
       </div>
       
 
